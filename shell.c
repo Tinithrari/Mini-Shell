@@ -15,8 +15,6 @@
 #define BUFFER_SIZE 256
 #define ERR -1
 
-//ceci est un main
-
 int main(void)
 {
 	pid_t pid;	
