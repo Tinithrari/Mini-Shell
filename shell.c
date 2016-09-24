@@ -15,6 +15,7 @@
 #define BUFFER_SIZE 256
 #define ERR -1
 
+// Shitty commentary
 //ceci est un main
 
 int main(void)
