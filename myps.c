@@ -15,7 +15,12 @@
 #define syserror(s, c) perror(s), exit(c)
 
 #define PROC_FOLDER "/proc"
-
+/**
+ * @fn int isNumber(char *s)
+ * @brief check if a string is a number
+ * @param s the string to check
+ * @return 1 if the string is a number, 0 otherwise
+ */
 int isNumber(char* s)
 {
 	char *c;
