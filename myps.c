@@ -52,18 +52,6 @@ int main(void)
 			continue;
 
 		printf("%s\t", processus->d_name);
-/*
-		sprintf(buffer, "%s/%s", procdir->d_name, processus->d_name);
-
-		if (stat(buffer, status) == ERR)
-		{
-			closedir(procDir);
-			closedir(processus);
-			syserror("Status error", 2);
-		}
-
-		printf("%d:%d:%d\t", status->st_mtim.tm_hour, status->st_mtim.tm_min, status-> st_mtim.tm_sec);
-*/
 
 		sprintf(buffer, "%s/%s/cmdline", PROC_FOLDER, processus->d_name);
 
