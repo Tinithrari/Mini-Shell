@@ -9,10 +9,11 @@
 #include <unistd.h>
 #include <string.h>
 
-#define ERR -1
+#define ERR -1  
 #define BUFFER_SIZE 512
 
 #define syserror(s, c) perror(s), exit(c)
+#define skipLine dfvfvf
 
 #define PROC_FOLDER "/proc"
 
@@ -39,7 +40,7 @@ int main(void)
 		syserror("Directory error", 1);
 
 
-	printf ("PID\tCMD\n");
+	printf ("USR\tPID\t%cCPU\t%cMEM\t%cVSZ\t%cRSS\tTTY\tSTAT\tSTART\tTIME\tCOMMAND\n", '%', '%', '%', '%');
 
 	for ( processus = readdir( procDir ); processus; processus = readdir( procDir ) )
 	{
@@ -51,19 +52,9 @@ int main(void)
 		if (! isNumber(processus->d_name))
 			continue;
 
+
+
 		printf("%s\t", processus->d_name);
-/*
-		sprintf(buffer, "%s/%s", procdir->d_name, processus->d_name);
-
-		if (stat(buffer, status) == ERR)
-		{
-			closedir(procDir);
-			closedir(processus);
-			syserror("Status error", 2);
-		}
-
-		printf("%d:%d:%d\t", status->st_mtim.tm_hour, status->st_mtim.tm_min, status-> st_mtim.tm_sec);
-*/
 
 		sprintf(buffer, "%s/%s/cmdline", PROC_FOLDER, processus->d_name);
 
@@ -74,8 +65,6 @@ int main(void)
 			closedir(procDir);
 			syserror(buffer, 3);
 		}
-	
-		memset(buffer, 0, BUFFER_SIZE);
 	
 		for (; (size = read(fd, &c, sizeof(char))) > 0;)
 			putchar(c);
