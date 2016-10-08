@@ -15,6 +15,7 @@
 #define syserror(s, c) perror(s), exit(c)
 
 #define PROC_FOLDER "/proc"
+
 /**
  * @fn int isNumber(char *s)
  * @brief check if a string is a number
@@ -44,7 +45,7 @@ int main(void)
 		syserror("Directory error", 1);
 
 
-	printf ("PID\tCMD\n");
+	printf ("USR\tPID\t%cCPU\t%cMEM\tVSZ\tRSS\tTTY\tSTAT\tSTART\tTIME\tCOMMAND\n");
 
 	for ( processus = readdir( procDir ); processus; processus = readdir( procDir ) )
 	{
