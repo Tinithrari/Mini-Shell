@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
 	DIR* d; 		//repertoire
 	struct dirent *elt;	//content
 	struct stat st;
-	struct passwd *pwd;
+	struct passwd *pwd;	
+	struct tm *mtime;
 
 	argc--;
 	argv++;
@@ -78,14 +79,87 @@ int main(int argc, char *argv[])
 			printf("%c",(st.st_mode & S_IROTH) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
-		  
+		    
+			printf("%d ",st.st_nlink);
+
 			pwd = getpwuid (st.st_uid); //appel systeme, test valeur de retour
 			printf("%s ",pwd->pw_name);
 
 			pwd = getpwuid (st.st_gid); //appel systeme, test valeur de retour
+										//getgrgid pour nom du group + group * a definir *
 			printf("%s ",pwd->pw_name);
 
         	printf("%lld ",(long long) st.st_size);
+
+			/*printf("%c%d:%c%d",
+			((st.st_mtim.tv_sec/3600)>10) ? '' : '0',
+			 st.st_mtim.tv_sec/3600,
+			(((st.st_mtim.tv_sec%3600)/60)>10) ? '' : '0',
+			 (st.st_mtim.tv_sec%3600)/60);*/
+
+			mtime = localtime(&(st.st_mtim.tv_sec));
+
+			switch(mtime->tm_mon)
+			{
+				case 0:
+					printf("jan. ");
+					break;
+
+				case 1:
+					printf("feb. ");
+					break;
+					
+				case 2:
+					printf("mar. ");
+					break;
+					
+				case 3:
+					printf("apr. ");
+					break;
+					
+				case 4:
+					printf("may. ");
+					break;
+					
+				case 5:
+					printf("june. ");
+					break;
+					
+				case 6:
+					printf("jul. ");
+					break;
+					
+				case 7:
+					printf("aug. ");
+					break;
+					
+				case 8:
+					printf("sept. ");
+					break;
+					
+				case 9:
+					printf("oct. ");
+					break;
+					
+				case 10:
+					printf("nov. ");
+					break;
+					
+				default :
+					printf("dec. ");
+					break;
+			}
+
+			 printf("%d ",mtime->tm_mday);
+
+			 if(mtime->tm_hour < 10)
+			 	printf("0");
+			 printf("%d:",mtime->tm_hour);
+
+			 if(mtime->tm_min <10)
+			 	printf("0");
+			 printf("%d ",mtime->tm_min);
+			
 
 			printf("%s \n", elt->d_name);
 		}
