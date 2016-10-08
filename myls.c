@@ -8,6 +8,7 @@
 
 #include<sys/types.h>
 #include<sys/stat.h>
+#include<pwd.h>
 
 #define ERR -1
 #define syserror(m,e) perror(m), exit(e)
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 	DIR* d; 		//repertoire
 	struct dirent *elt;	//content
 	struct stat st;
+	struct passwd *pwd;
 
 	argc--;
 	argv++;
@@ -77,9 +79,13 @@ int main(int argc, char *argv[])
 			printf("%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
 		  
-        	printf("%lld ",(long long) st.st_size);
+			pwd = getpwuid (st.st_uid); //appel systeme, test valeur de retour
+			printf("%s ",pwd->pw_name);
 
-        	//printf("%s ", ctime(&st.st_mtime));
+			pwd = getpwuid (st.st_gid); //appel systeme, test valeur de retour
+			printf("%s ",pwd->pw_name);
+
+        	printf("%lld ",(long long) st.st_size);
 
 			printf("%s \n", elt->d_name);
 		}
