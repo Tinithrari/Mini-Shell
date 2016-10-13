@@ -30,17 +30,22 @@ int main(int argc, char *argv[])
 	argc--;
 	argv++;
 	
+	//Initialisation des flags en fonction des options choisis
 	for (;argc && (**argv) == '-';)
 	{
+		//Dans le cas ou -aR ou -Ra ont ete saisi en ligne de commande
 		if ( ! strcmp("-aR", *(argv)) || ! strcmp("-Ra", *(argv)) )
-		{
+		{	
 			flag[FLAG_A] = 1;
 			flag[FLAG_R] = 1;
 		}
+		//Dans le cas ou -a a ete saisi en ligne de commande 
 		else if (! strcmp("-a", *(argv)))
 			flag[FLAG_A] = 1;
+		//Dans le cas ou -R a ete saisi en ligne de commande
 		else if (! strcmp("-R", *(argv)))
 			flag[FLAG_R] = 1;
+		//Une option invalide a ete saisi, cas d'erreur
 		else
 		{
 			sprintf(bufferErr, "Option invalide : %s", *(argv));
@@ -51,26 +56,46 @@ int main(int argc, char *argv[])
 	
 	for(s=(argc==0) ? "." : *(argv); s ;){
 		
+		//On ouvre le repertoire, si echec, erreur
 		if(!(d = opendir(s))) syserror("Directory problem",1);
 		
-		printf("%s : \n",s);
-		
+		if(argc > 1)
+			printf("%s:\n",s);
+
+		//On boucle tant qu'il a des elements a lire dans le repertoire
 		while(elt = readdir(d))
 		{ 
-			if(stat(elt->d_name,&st) == ERR)
-				syserror("Stat error",2);
+			char buffer[512];
 
-           switch (st.st_mode & S_IFMT) 
-		   {
+			memset(buffer,0,sizeof(buffer));
+
+			//Dans le cadre du -a on passe au tour de boucle suivant si le flag est a 1 ou si le '.' est le premier caractere
+			if ((*(elt->d_name) == '.') && !(flag[FLAG_A]))
+				continue;
+
+
+			//Afin de definir l'arboresence 
+			strcat(buffer,s);
+			strcat(buffer,"/");
+			strcat(buffer,elt->d_name);
+
+			//On initialise la structure stat, erreur si echec
+			if(stat(buffer,&st) == ERR)
+				syserror("Stat error",2);
+			
+			//On regarde si il s'agit d'un repertoire ou non
+            switch (st.st_mode & S_IFMT) 
+		    {
            		case S_IFDIR: 
 				    printf("d");               
 					break;
            		default:       
 				   	printf("-");               
 				   	break;
-           }
+            }
 
-		    printf("%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
+			//Affichage des differents droits associe au fichier 
+			printf("%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWUSR) ? 'w' : '-' );
 		    printf("%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
 		    printf("%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
@@ -80,25 +105,26 @@ int main(int argc, char *argv[])
 			printf("%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
 		    
+			//Affichage du nombre de liens physique
 			printf("%d ",st.st_nlink);
 
+			//Affichage du nom de l'utilisateur
 			pwd = getpwuid (st.st_uid); //appel systeme, test valeur de retour
 			printf("%s ",pwd->pw_name);
 
+			//Affichage du nom de groupe
 			pwd = getpwuid (st.st_gid); //appel systeme, test valeur de retour
 										//getgrgid pour nom du group + group * a definir *
 			printf("%s ",pwd->pw_name);
 
+
+			//Affichage de la taille
         	printf("%lld ",(long long) st.st_size);
 
-			/*printf("%c%d:%c%d",
-			((st.st_mtim.tv_sec/3600)>10) ? '' : '0',
-			 st.st_mtim.tv_sec/3600,
-			(((st.st_mtim.tv_sec%3600)/60)>10) ? '' : '0',
-			 (st.st_mtim.tv_sec%3600)/60);*/
-
+			//Affichage de la date  de la derniere modification du ficher
 			mtime = localtime(&(st.st_mtim.tv_sec));
 
+			//On affiche le mois
 			switch(mtime->tm_mon)
 			{
 				case 0:
@@ -150,8 +176,11 @@ int main(int argc, char *argv[])
 					break;
 			}
 
+			 //On affiche le jour
 			 printf("%d ",mtime->tm_mday);
 
+
+			 //Affichege de la derniere heure de modification
 			 if(mtime->tm_hour < 10)
 			 	printf("0");
 			 printf("%d:",mtime->tm_hour);
@@ -160,13 +189,12 @@ int main(int argc, char *argv[])
 			 	printf("0");
 			 printf("%d ",mtime->tm_min);
 			
-
-			printf("%s \n", elt->d_name);
+			 //Affichage du nom du ficher 
+			 printf("%s \n", elt->d_name);
 		}
 
+		//Fermeture du repertoire
 		closedir(d);
-		
-		//putchar('\n');
 
 		if  (!argc) break;
 		
