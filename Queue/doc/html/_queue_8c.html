@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Queue Library: Queue.h File Reference</title>
+<title>Queue Library: Queue.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('_queue_8h.html','');});
+$(document).ready(function(){initNavTree('_queue_8c.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -103,102 +103,43 @@ $(document).ready(function(){initNavTree('_queue_8h.html','');});
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Queue.h File Reference</div>  </div>
+<div class="title">Queue.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Librairie implémentant la file chainée générique.  
-<a href="#details">More...</a></p>
-
-<p><a href="_queue_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqueue_elt.html">queueElt</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element de la file.  <a href="structqueue_elt.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqueue.html">queue</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">File générique.  <a href="structqueue.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a75a5e1d6f07881cf121cafb1a1f90eaa"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structqueue_elt.html">queueElt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a></td></tr>
-<tr class="memdesc:a75a5e1d6f07881cf121cafb1a1f90eaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">alias pour <a class="el" href="structqueue_elt.html" title="Element de la file. ">queueElt</a>  <a href="#a75a5e1d6f07881cf121cafb1a1f90eaa">More...</a><br /></td></tr>
-<tr class="separator:a75a5e1d6f07881cf121cafb1a1f90eaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9b7ce72fad282ae3b5483cb1d963572"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structqueue.html">queue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a></td></tr>
-<tr class="memdesc:aa9b7ce72fad282ae3b5483cb1d963572"><td class="mdescLeft">&#160;</td><td class="mdescRight">alias pour queue  <a href="#aa9b7ce72fad282ae3b5483cb1d963572">More...</a><br /></td></tr>
-<tr class="separator:aa9b7ce72fad282ae3b5483cb1d963572"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
+<div class="textblock"><code>#include &quot;<a class="el" href="_queue_8h_source.html">Queue.h</a>&quot;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
+<code>#include &lt;string.h&gt;</code><br />
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a02f683e059157b6d144806628776f6a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a02f683e059157b6d144806628776f6a4">createQueue</a> (size_t eltSize)</td></tr>
-<tr class="memdesc:a02f683e059157b6d144806628776f6a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Créer une file.  <a href="#a02f683e059157b6d144806628776f6a4">More...</a><br /></td></tr>
-<tr class="separator:a02f683e059157b6d144806628776f6a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc1ed5d4cbdaef1c574f331ad5aaf769"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#abc1ed5d4cbdaef1c574f331ad5aaf769">enqueue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>, void *elt)</td></tr>
+<tr class="memitem:ad20e89e4cb664e2c5751cd73b742e270"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#ad20e89e4cb664e2c5751cd73b742e270">createQueue</a> (size_t eltSize)</td></tr>
+<tr class="memdesc:ad20e89e4cb664e2c5751cd73b742e270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Créer une file.  <a href="#ad20e89e4cb664e2c5751cd73b742e270">More...</a><br /></td></tr>
+<tr class="separator:ad20e89e4cb664e2c5751cd73b742e270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1ed5d4cbdaef1c574f331ad5aaf769"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#abc1ed5d4cbdaef1c574f331ad5aaf769">enqueue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>, void *elt)</td></tr>
 <tr class="memdesc:abc1ed5d4cbdaef1c574f331ad5aaf769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enfile un élément à la file passé en paramètre.  <a href="#abc1ed5d4cbdaef1c574f331ad5aaf769">More...</a><br /></td></tr>
 <tr class="separator:abc1ed5d4cbdaef1c574f331ad5aaf769"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f61f817272a56bebb6e3f28f35d09c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a7f61f817272a56bebb6e3f28f35d09c7">dequeue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
-<tr class="memdesc:a7f61f817272a56bebb6e3f28f35d09c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Défile un élément de la file passé en paramètre.  <a href="#a7f61f817272a56bebb6e3f28f35d09c7">More...</a><br /></td></tr>
-<tr class="separator:a7f61f817272a56bebb6e3f28f35d09c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5202f46e8f5789ffe239ff23165e69e9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a5202f46e8f5789ffe239ff23165e69e9">isQueueEmpty</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
-<tr class="memdesc:a5202f46e8f5789ffe239ff23165e69e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indique si la file est vide.  <a href="#a5202f46e8f5789ffe239ff23165e69e9">More...</a><br /></td></tr>
-<tr class="separator:a5202f46e8f5789ffe239ff23165e69e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47a3ef042eb0784f33a07eeaae9bfe18"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a47a3ef042eb0784f33a07eeaae9bfe18">queueSize</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
-<tr class="memdesc:a47a3ef042eb0784f33a07eeaae9bfe18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Donne la taille de la file.  <a href="#a47a3ef042eb0784f33a07eeaae9bfe18">More...</a><br /></td></tr>
-<tr class="separator:a47a3ef042eb0784f33a07eeaae9bfe18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a543e00018c033869c1d764353f24ab04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a543e00018c033869c1d764353f24ab04">freeQueue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
-<tr class="memdesc:a543e00018c033869c1d764353f24ab04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Libère la file de la mémoire et ses éléments.  <a href="#a543e00018c033869c1d764353f24ab04">More...</a><br /></td></tr>
-<tr class="separator:a543e00018c033869c1d764353f24ab04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78e2e21c880e7e9eaaeb220d72b41b42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8h.html#a78e2e21c880e7e9eaaeb220d72b41b42">freeQueueElt</a> (<a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a> *elt)</td></tr>
+<tr class="memitem:a83e3aeb1b605d458b36511d154a60c15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#a83e3aeb1b605d458b36511d154a60c15">dequeue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
+<tr class="memdesc:a83e3aeb1b605d458b36511d154a60c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Défile un élément de la file passé en paramètre.  <a href="#a83e3aeb1b605d458b36511d154a60c15">More...</a><br /></td></tr>
+<tr class="separator:a83e3aeb1b605d458b36511d154a60c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a4d1cfd63d6e700055fa11eabe9543d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#a7a4d1cfd63d6e700055fa11eabe9543d">queueSize</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *q)</td></tr>
+<tr class="memdesc:a7a4d1cfd63d6e700055fa11eabe9543d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Donne la taille de la file.  <a href="#a7a4d1cfd63d6e700055fa11eabe9543d">More...</a><br /></td></tr>
+<tr class="separator:a7a4d1cfd63d6e700055fa11eabe9543d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78e2e21c880e7e9eaaeb220d72b41b42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#a78e2e21c880e7e9eaaeb220d72b41b42">freeQueueElt</a> (<a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a> *elt)</td></tr>
 <tr class="memdesc:a78e2e21c880e7e9eaaeb220d72b41b42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Libère les ressources occupés à un élément de file.  <a href="#a78e2e21c880e7e9eaaeb220d72b41b42">More...</a><br /></td></tr>
 <tr class="separator:a78e2e21c880e7e9eaaeb220d72b41b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a543e00018c033869c1d764353f24ab04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_queue_8c.html#a543e00018c033869c1d764353f24ab04">freeQueue</a> (<a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *<a class="el" href="structqueue.html">queue</a>)</td></tr>
+<tr class="memdesc:a543e00018c033869c1d764353f24ab04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Libère la file de la mémoire et ses éléments.  <a href="#a543e00018c033869c1d764353f24ab04">More...</a><br /></td></tr>
+<tr class="separator:a543e00018c033869c1d764353f24ab04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Librairie implémentant la file chainée générique. </p>
-<dl class="section author"><dt>Author</dt><dd>Xavier Heugue </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1 </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>13 Octobre 2016 </dd></dl>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="aa9b7ce72fad282ae3b5483cb1d963572"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structqueue.html">queue</a> <a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>alias pour queue </p>
-
-</div>
-</div>
-<a class="anchor" id="a75a5e1d6f07881cf121cafb1a1f90eaa"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct <a class="el" href="structqueue_elt.html">queueElt</a> <a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>alias pour <a class="el" href="structqueue_elt.html" title="Element de la file. ">queueElt</a> </p>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a02f683e059157b6d144806628776f6a4"></a>
+<a class="anchor" id="ad20e89e4cb664e2c5751cd73b742e270"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a>* createQueue </td>
+          <td class="memname"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> * createQueue </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>eltSize</em></td><td>)</td>
@@ -218,12 +159,12 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a7f61f817272a56bebb6e3f28f35d09c7"></a>
+<a class="anchor" id="a83e3aeb1b605d458b36511d154a60c15"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a>* dequeue </td>
+          <td class="memname"><a class="el" href="_queue_8h.html#a75a5e1d6f07881cf121cafb1a1f90eaa">QueueElt</a> * dequeue </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *&#160;</td>
           <td class="paramname"><em>queue</em></td><td>)</td>
@@ -327,32 +268,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5202f46e8f5789ffe239ff23165e69e9"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int isQueueEmpty </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *&#160;</td>
-          <td class="paramname"><em>queue</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Indique si la file est vide. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">queue</td><td>La file à analyser </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>1 si la file est vide, 0 sinon </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a47a3ef042eb0784f33a07eeaae9bfe18"></a>
+<a class="anchor" id="a7a4d1cfd63d6e700055fa11eabe9543d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -360,7 +276,7 @@ Functions</h2></td></tr>
           <td class="memname">int queueSize </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="_queue_8h.html#aa9b7ce72fad282ae3b5483cb1d963572">Queue</a> *&#160;</td>
-          <td class="paramname"><em>q</em></td><td>)</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -382,7 +298,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="_queue_8h.html">Queue.h</a></li>
+    <li class="navelem"><a class="el" href="_queue_8c.html">Queue.c</a></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
