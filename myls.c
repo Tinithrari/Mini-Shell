@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
 			if ((*(elt->d_name) == '.') && !(flag[FLAG_A]))
 				continue;
 
-
 			//Afin de definir l'arboresence 
 			strcat(buffer,s);
 			strcat(buffer,"/");
@@ -108,15 +107,17 @@ int main(int argc, char *argv[])
 			//Affichage du nombre de liens physique
 			printf("%d ",st.st_nlink);
 
-			//Affichage du nom de l'utilisateur
-			pwd = getpwuid (st.st_uid); //appel systeme, test valeur de retour
+			//Affichage du nom de l'utilisateur tout en testant la valeur de retour de pwd, erreur sinon
+			if((pwd = getpwuid (st.st_uid)) == NULL)
+				syserror("getpwuid error",3);
+
 			printf("%s ",pwd->pw_name);
 
-			//Affichage du nom de groupe
-			pwd = getpwuid (st.st_gid); //appel systeme, test valeur de retour
-										//getgrgid pour nom du group + group * a definir *
-			printf("%s ",pwd->pw_name);
+			//Affichage du nom de groupe tout en testant la valeur de retour de pwd, erreur sinon
+			if((pwd = getpwuid (st.st_gid)) == NULL) //getgrgid pour nom du group + group * a definir *
+				syserror("Getpwuid error",3);
 
+			printf("%s ",pwd->pw_name);
 
 			//Affichage de la taille
         	printf("%lld ",(long long) st.st_size);
