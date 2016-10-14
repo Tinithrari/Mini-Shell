@@ -86,8 +86,17 @@ int main(int argc, char *argv[])
             switch (st.st_mode & S_IFMT) 
 		    {
            		case S_IFDIR: 
-				    printf("d");               
+				    
+					printf("d");
+
+					//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
+					if(!flag[FLAG_R])
+					{
+						printf("Ici on ajoute dans la file\n");
+					}
+
 					break;
+
            		default:       
 				   	printf("-");               
 				   	break;
