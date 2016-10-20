@@ -1,10 +1,9 @@
-sequence_char	(&&|\|\||;)
-space		[ \t]
-spec		[&\t;\"\' \t\n]
+sequence_char		(&&|\|\||;)
+space			[ \t]
+spec			[&\t;\"\']
 %%
-{sequence_char}\n		printf("Délimiteur de sequence détecté: %s\n", yytext);
-{spec}\n			printf("Caractère speciaux: %s\n", yytext);
-.				printf("rien n'a été reconnu\n");
+[^{spec}]+		printf("nom de fichier ou de commande: %s\n", yytext);
+.			printf("Caractère non reconnu: %s\n", yytext);
 %%
 int main(void)
 {
