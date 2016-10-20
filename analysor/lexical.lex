@@ -1,11 +1,12 @@
-sequence_char		(&&|\|\||;)
-space			[ \t]
-spec			[&\t;\"\']
+sequence_char	(&&|\|\||;)
+carac	[^&;\|\"\']
 %%
-[^{spec}]+		printf("nom de fichier ou de commande: %s\n", yytext);
-.			printf("Caractère non reconnu: %s\n", yytext);
+{sequence_char}			{ printf("Séquence détecté: %s\n", yytext); }
+{carac}+			{ printf("Nom de fichier détecté: %s\n", yytext); }
 %%
 int main(void)
 {
-	yylex();
+	for(;;)
+		yylex();
+	return 0;
 }
