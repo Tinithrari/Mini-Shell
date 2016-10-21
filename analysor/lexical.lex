@@ -1,11 +1,9 @@
-sequence_char		(&&|\|\||;)
-space			[ \t]
-spec			[&\t;\"\']
+sequence_char			(&&|\|\||;)
+space				[ \t]
+commande			[^&;\"\'\n]+
 %%
-[^{spec}]+		printf("nom de fichier ou de commande: %s\n", yytext);
-.			printf("Caractère non reconnu: %s\n", yytext);
+{commande}{space}+{sequence_char}{space}+{commande}	{ printf("Expression séquentielle détectée: %s", yytext); }
+{commande}						{ printf("nom de fichier ou de commande: %s", yytext); }
+\n							ECHO;
+.							{ printf("Caractère non reconnu: %s", yytext); }
 %%
-int main(void)
-{
-	yylex();
-}
