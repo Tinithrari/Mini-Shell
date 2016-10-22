@@ -1,3 +1,4 @@
+
 sequence_char	(&&|\|\||;)
 carac	[^&;\|\"\']
 %%
