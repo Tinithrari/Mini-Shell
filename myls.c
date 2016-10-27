@@ -10,22 +10,25 @@
 #include<sys/stat.h>
 #include<pwd.h>
 
-#define ERR -1
+#define couleur(p) printf("\033[%sm",p)
 #define syserror(m,e) perror(m), exit(e)
 #define fatalerror(m,e) fprintf(stderr, "%s\n", m), exit(e)
 
+#define ERR -1
 #define FLAG_A 0
 #define FLAG_R 1
 
 int main(int argc, char *argv[])
 {
-	char flag[2] = {0,0}, bufferErr[128];
+	char flag[2] = {0,0}, bufferErr[128], bufferMimeType[128], type[128];
 	char *s;
 	DIR* d; 		//repertoire
 	struct dirent *elt;	//content
 	struct stat st;
 	struct passwd *pwd;	
 	struct tm *mtime;
+	pid_t pid;
+	int tube[2];
 
 	argc--;
 	argv++;
@@ -66,6 +69,7 @@ int main(int argc, char *argv[])
 		while(elt = readdir(d))
 		{ 
 			char buffer[512];
+			char *ext;
 
 			memset(buffer,0,sizeof(buffer));
 
@@ -199,8 +203,111 @@ int main(int argc, char *argv[])
 			 	printf("0");
 			 printf("%d ",mtime->tm_min);
 			
-			 //Affichage du nom du ficher 
-			 printf("%s \n", elt->d_name);
+			//Detection des extentions particulieres pour les fichiers images, sons et executables
+			ext = strrchr(elt->d_name,'/');
+			
+			if(pipe(tube) == ERR)
+					syserror("Pipe problem",4);
+
+			if((pid = fork()) == ERR)
+				syserror("Fork problem", 5);
+
+			if(pid > 0)
+				{
+				close(tube[0]);
+				execl("/usr/bin/mimetype","mimetype","-b",elt->d_name,NULL);
+				close(tube[1]);
+				syserror("Execl error", 6);
+				}
+
+			else
+			{
+				int status, i;
+				char c;
+
+				close(tube[1]);
+				wait(&status);
+
+				if(WIFEXITED(status)){
+					for(i = 0; read(tube[0],&c,sizeof(char)); i++){
+						bufferMimeType[i] = c ;
+						}
+					bufferMimeType[i] = '\0';
+					strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType - 1 );
+					type[strchr(bufferMimeType, '/') - bufferMimeType] ='\0';
+					}
+				else
+					exit(6);	
+			}
+
+			if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0))){
+
+
+				}
+
+			if(strcmp(type,"application") == 0){
+
+				if(st.st_mode & S_IFMT == S_IFCMP){}
+				else{}
+
+				}
+
+
+			else{
+
+			 	//Affichage du nom du fichier
+				 switch (st.st_mode & S_IFMT) 
+		     	 {
+					//Couleur bleu pour les repertoires
+           			case S_IFDIR: 
+				    	couleur("34");
+						printf("%s \n", elt->d_name);
+						couleur("0");
+						break;
+
+					//Couleur cyan pour les liens symboliques
+					case S_IFLNK:
+						couleur("36");
+						printf("%s \n", elt->d_name);
+						couleur("0");
+						break;
+
+					//Couleur jaune pour les fichiers FIFO ou blocks
+					case S_IFIFO:
+					case S_IFBLK:
+						couleur("33");
+						printf("%s \n", elt->d_name);
+						couleur("0");
+						break;	
+				
+					//Couleur magenta pour les fichiers audios, images ou sockets
+					case S_IFSOCK:
+						couleur("35");
+						printf("%s \n", elt->d_name);
+						couleur("0");
+						break;
+/*
+				case :
+				case :	
+
+					break;
+
+				//Couleur rouge pour les archives
+           		case S_IFCMP: 
+				    
+					break;
+
+				//Couleur vert pour les executables
+           		case: 
+				    
+					break;
+*/
+				//Couleur par defaut pour les fichiers ordinaires
+           			case S_IFREG:       
+				   		printf("%s \n", elt->d_name);             
+				   		break;
+             	}
+			}
 		}
 
 		//Fermeture du repertoire
