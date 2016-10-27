@@ -1,9 +1,6 @@
-
-sequence_char	(&&|\|\||;)
-carac	[^&;\|\"\']
+nom	[A-Za-z0-9\-_/\.]	
 %%
-{sequence_char}			{ printf("Séquence détecté: %s\n", yytext); }
-{carac}+			{ printf("Nom de fichier détecté: %s\n", yytext); }
+
 %%
 int main(void)
 {
