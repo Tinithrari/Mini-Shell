@@ -5,6 +5,7 @@
 #include<time.h>
 #include<string.h>
 #include<unistd.h>
+#include<stdio_ext.h>
 
 #include<sys/types.h>
 #include<sys/stat.h>
@@ -87,32 +88,30 @@ int main(int argc, char *argv[])
 				syserror("Stat error",2);
 			
 			//On regarde si il s'agit d'un repertoire ou non
-            switch (st.st_mode & S_IFMT) 
-		    {
-           		case S_IFDIR: 
-				    
-					printf("d");
+            		switch (st.st_mode & S_IFMT) 
+		    	{
+           		case S_IFDIR:     
+				printf("d");
+				//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
+				if(!flag[FLAG_R])
+				{
+					// Ici on ajoute dans la file
+				}
 
-					//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
-					if(!flag[FLAG_R])
-					{
-						printf("Ici on ajoute dans la file\n");
-					}
-
-					break;
-
-           		default:       
-				   	printf("-");               
-				   	break;
-            }
+			break;
+           		
+			default:       
+				printf("-");               
+			break;
+            		}
 
 			//Affichage des differents droits associe au fichier 
 			printf("%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWUSR) ? 'w' : '-' );
-		    printf("%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
-		    printf("%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
-		    printf("%c",(st.st_mode & S_IWGRP) ? 'w' : '-' );
-		    printf("%c",(st.st_mode & S_IXGRP) ? 'x' : '-' );
+		    	printf("%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
+		    	printf("%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
+		    	printf("%c",(st.st_mode & S_IWGRP) ? 'w' : '-' );
+		    	printf("%c",(st.st_mode & S_IXGRP) ? 'x' : '-' );
 			printf("%c",(st.st_mode & S_IROTH) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
@@ -133,7 +132,7 @@ int main(int argc, char *argv[])
 			printf("%s ",pwd->pw_name);
 
 			//Affichage de la taille
-        	printf("%lld ",(long long) st.st_size);
+        		printf("%lld ",(long long) st.st_size);
 
 			//Affichage de la date  de la derniere modification du ficher
 			mtime = localtime(&(st.st_mtim.tv_sec));
@@ -203,23 +202,23 @@ int main(int argc, char *argv[])
 			 	printf("0");
 			 printf("%d ",mtime->tm_min);
 			
-			//Detection des extentions particulieres pour les fichiers images, sons et executables
-			ext = strrchr(elt->d_name,'/');
-			
 			if(pipe(tube) == ERR)
-					syserror("Pipe problem",4);
+				syserror("Pipe problem",4);
 
 			if((pid = fork()) == ERR)
 				syserror("Fork problem", 5);
 
-			if(pid > 0)
-				{
+			
+			if(pid)
+			{
 				close(tube[0]);
-				execl("/usr/bin/mimetype","mimetype","-b",elt->d_name,NULL);
+				__fpurge(stdout); // Purge stdout
+				close(1);
+				dup(tube[1]);
 				close(tube[1]);
+				execlp("/usr/bin/mimetype","mimetype","-b",elt->d_name,NULL);
 				syserror("Execl error", 6);
-				}
-
+			}
 			else
 			{
 				int status, i;
@@ -228,68 +227,59 @@ int main(int argc, char *argv[])
 				close(tube[1]);
 				wait(&status);
 
-				if(WIFEXITED(status)){
-					for(i = 0; read(tube[0],&c,sizeof(char)); i++){
-						bufferMimeType[i] = c ;
-						}
-					bufferMimeType[i] = '\0';
-					strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType - 1 );
-					type[strchr(bufferMimeType, '/') - bufferMimeType] ='\0';
-					}
-				else
-					exit(6);	
-			}
-
-			if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0))){
-
-
-				}
-
-			if(strcmp(type,"application") == 0){
-
-				if(st.st_mode & S_IFMT == S_IFCMP){}
-				else{}
-
-				}
-
-
-			else{
-
-			 	//Affichage du nom du fichier
-				 switch (st.st_mode & S_IFMT) 
-		     	 {
-					//Couleur bleu pour les repertoires
-           			case S_IFDIR: 
-				    	couleur("34");
-						printf("%s \n", elt->d_name);
-						couleur("0");
-						break;
-
-					//Couleur cyan pour les liens symboliques
-					case S_IFLNK:
-						couleur("36");
-						printf("%s \n", elt->d_name);
-						couleur("0");
-						break;
-
-					//Couleur jaune pour les fichiers FIFO ou blocks
-					case S_IFIFO:
-					case S_IFBLK:
-						couleur("33");
-						printf("%s \n", elt->d_name);
-						couleur("0");
-						break;	
 				
-					//Couleur magenta pour les fichiers audios, images ou sockets
-					case S_IFSOCK:
-						couleur("35");
-						printf("%s \n", elt->d_name);
-						couleur("0");
-						break;
-/*
+				for(i = 0; (read(tube[0],&c,sizeof(char))) && c != '\n'; i++)
+					bufferMimeType[i] = c ;
+	
+				bufferMimeType[i] = '\0';
+				strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType );
+				type[strchr(bufferMimeType, '/') - bufferMimeType + 1]  ='\0';
+			}
+			if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0)))
+			{
+				couleur("35");
+			}
+			else if(strcmp(type,"application") == 0)
+			{
+				if( ! strcmp(strchr(bufferMimeType, '/'), "x-executable")  )
+				{
+					couleur("33");
+				}
+				else
+				{
+					couleur("32");
+				}
+
+			}
+			else
+			{
+
+				//Affichage du nom du fichier
+				switch (st.st_mode & S_IFMT) 
+		     	 	{
+				//Couleur bleu pour les repertoires
+           			case S_IFDIR: 
+					couleur("34");
+				break;
+
+				//Couleur cyan pour les liens symboliques
+				case S_IFLNK:
+					couleur("36");
+				break;
+
+				//Couleur jaune pour les fichiers FIFO ou blocks
+				case S_IFIFO:
+				case S_IFBLK:
+					couleur("33");
+				break;	
+				
+				//Couleur magenta pour les fichiers audios, images ou sockets
+				case S_IFSOCK:
+					couleur("35");
+				break;
+/* TODO Retirer bloc
 				case :
 				case :	
-
 					break;
 
 				//Couleur rouge pour les archives
@@ -303,11 +293,11 @@ int main(int argc, char *argv[])
 					break;
 */
 				//Couleur par defaut pour les fichiers ordinaires
-           			case S_IFREG:       
-				   		printf("%s \n", elt->d_name);             
-				   		break;
-             	}
+             			}
 			}
+			
+			printf("%s\n", elt->d_name);
+			couleur("0");
 		}
 
 		//Fermeture du repertoire
@@ -315,8 +305,7 @@ int main(int argc, char *argv[])
 
 		if  (!argc) break;
 		
-		if(s=*(++argv))putchar('\n');
+		s=*(++argv);
 	}
-		
 	return 0;
 }
