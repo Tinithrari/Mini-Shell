@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 				syserror("Fork problem", 5);
 
 			
-			if(pid)
+			if(! pid)
 			{
 				close(tube[0]);
 				__fpurge(stdout); // Purge stdout
