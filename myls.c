@@ -108,10 +108,10 @@ int main(int argc, char *argv[])
 			//Affichage des differents droits associe au fichier 
 			printf("%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWUSR) ? 'w' : '-' );
-		    	printf("%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
-		    	printf("%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
-		    	printf("%c",(st.st_mode & S_IWGRP) ? 'w' : '-' );
-		    	printf("%c",(st.st_mode & S_IXGRP) ? 'x' : '-' );
+		    printf("%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
+		    printf("%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
+		    printf("%c",(st.st_mode & S_IWGRP) ? 'w' : '-' );
+		    printf("%c",(st.st_mode & S_IXGRP) ? 'x' : '-' );
 			printf("%c",(st.st_mode & S_IROTH) ? 'r' : '-' );
 			printf("%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
@@ -123,16 +123,16 @@ int main(int argc, char *argv[])
 			if((pwd = getpwuid (st.st_uid)) == NULL)
 				syserror("getpwuid error",3);
 
-			printf("%s ",pwd->pw_name);
+			printf("%s\t",pwd->pw_name);
 
 			//Affichage du nom de groupe tout en testant la valeur de retour de pwd, erreur sinon
 			if((pwd = getpwuid (st.st_gid)) == NULL) //getgrgid pour nom du group + group * a definir *
 				syserror("Getpwuid error",3);
 
-			printf("%s ",pwd->pw_name);
+			printf("%s\t",pwd->pw_name);
 
 			//Affichage de la taille
-        		printf("%lld ",(long long) st.st_size);
+        	printf("%lld\t",(long long) st.st_size);
 
 			//Affichage de la date  de la derniere modification du ficher
 			mtime = localtime(&(st.st_mtim.tv_sec));
@@ -141,66 +141,66 @@ int main(int argc, char *argv[])
 			switch(mtime->tm_mon)
 			{
 				case 0:
-					printf("jan. ");
+					printf("jan.\t");
 					break;
 
 				case 1:
-					printf("feb. ");
+					printf("feb.\t");
 					break;
 					
 				case 2:
-					printf("mar. ");
+					printf("mar.\t");
 					break;
 					
 				case 3:
-					printf("apr. ");
+					printf("apr.\t");
 					break;
 					
 				case 4:
-					printf("may. ");
+					printf("may.\t");
 					break;
 					
 				case 5:
-					printf("june. ");
+					printf("june.\t");
 					break;
 					
 				case 6:
-					printf("jul. ");
+					printf("jul.\t");
 					break;
 					
 				case 7:
-					printf("aug. ");
+					printf("aug.\t");
 					break;
 					
 				case 8:
-					printf("sept. ");
+					printf("sept.\t");
 					break;
 					
 				case 9:
-					printf("oct. ");
+					printf("oct.\t");
 					break;
 					
 				case 10:
-					printf("nov. ");
+					printf("nov.\t");
 					break;
 					
 				default :
-					printf("dec. ");
+					printf("dec.\t");
 					break;
 			}
 
-			 //On affiche le jour
-			 printf("%d ",mtime->tm_mday);
+			//On affiche le jour
+			printf("%d\t",mtime->tm_mday);
 
 
-			 //Affichege de la derniere heure de modification
-			 if(mtime->tm_hour < 10)
+			//Affichege de la derniere heure de modification
+			if(mtime->tm_hour < 10)
+				printf("0");
+			printf("%d:",mtime->tm_hour);
+
+			if(mtime->tm_min <10)
 			 	printf("0");
-			 printf("%d:",mtime->tm_hour);
-
-			 if(mtime->tm_min <10)
-			 	printf("0");
-			 printf("%d ",mtime->tm_min);
+			printf("%d\t ",mtime->tm_min);
 			
 			if(pipe(tube) == ERR)
 				syserror("Pipe problem",4);
@@ -232,18 +232,18 @@ int main(int argc, char *argv[])
 					bufferMimeType[i] = c ;
 	
 				bufferMimeType[i] = '\0';
-				strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType );
-				type[strchr(bufferMimeType, '/') - bufferMimeType + 1]  ='\0';
+				strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType );				
+				type[strchr(bufferMimeType, '/') - bufferMimeType ]  ='\0';
 			}
 			if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0)))
 			{
 				couleur("35");
 			}
 			else if(strcmp(type,"application") == 0)
-			{
-				if( ! strcmp(strchr(bufferMimeType, '/'), "x-executable")  )
+			{	
+				if( ! strstr(strchr(bufferMimeType, '/'), "x-executable")  )
 				{
-					couleur("33");
+					couleur("31");
 				}
 				else
 				{
@@ -257,45 +257,29 @@ int main(int argc, char *argv[])
 				//Affichage du nom du fichier
 				switch (st.st_mode & S_IFMT) 
 		     	 	{
-				//Couleur bleu pour les repertoires
-           			case S_IFDIR: 
-					couleur("34");
-				break;
+						//Couleur bleu pour les repertoires
+           				case S_IFDIR: 
+							couleur("34");
+							break;
 
-				//Couleur cyan pour les liens symboliques
-				case S_IFLNK:
-					couleur("36");
-				break;
+						//Couleur cyan pour les liens symboliques
+						case S_IFLNK:
+							couleur("36");
+							break;
 
-				//Couleur jaune pour les fichiers FIFO ou blocks
-				case S_IFIFO:
-				case S_IFBLK:
-					couleur("33");
-				break;	
+						//Couleur jaune pour les fichiers FIFO ou blocks
+						case S_IFIFO:
+						case S_IFBLK:
+							couleur("33");
+							break;	
 				
-				//Couleur magenta pour les fichiers audios, images ou sockets
-				case S_IFSOCK:
-					couleur("35");
-				break;
-/* TODO Retirer bloc
-				case :
-				case :	
-					break;
-
-				//Couleur rouge pour les archives
-           		case S_IFCMP: 
-				    
-					break;
-
-				//Couleur vert pour les executables
-           		case: 
-				    
-					break;
-*/
-				//Couleur par defaut pour les fichiers ordinaires
-             			}
+						//Couleur magenta pour les fichiers audios, images ou sockets
+						case S_IFSOCK:
+							couleur("35");
+							break;
+             		}
 			}
-			
+			//Couleur par defaut pour les fichiers ordinaires
 			printf("%s\n", elt->d_name);
 			couleur("0");
 		}
