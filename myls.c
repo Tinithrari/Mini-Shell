@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
 			enqueue(tail,*argv);
 
 	for(; ! isQueueEmpty(tail) ;){
+		printf("%d\n", !isQueueEmpty(tail));
 		tmp = dequeue(tail);
-		printf("%s\n", "coucou");
 		s = (char *) tmp -> elt;
 
 		//On ouvre le repertoire, si echec, erreur
@@ -261,15 +261,14 @@ int main(int argc, char *argv[])
 			}
 			else if(strcmp(type,"application") == 0)
 			{	
-				if( ! strstr(strchr(bufferMimeType, '/'), "x-executable")  )
-				{
-					couleur("31");
-				}
-				else
+				if( strstr(strchr(bufferMimeType, '/'), "x-executable")  )
 				{
 					couleur("32");
 				}
-
+				else if(! strstr(strchr(bufferMimeType, '/'), "x-object"))
+				{
+					couleur("31");
+				}
 			}
 			else
 			{
