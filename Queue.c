@@ -86,6 +86,13 @@ QueueElt* dequeue(Queue* queue)
 
 }
 
+int isQueueEmpty(Queue* q)
+{
+	if (q == NULL)
+		return -1;
+	return (q->head == NULL) && (q->tail == NULL);
+}
+
 int queueSize(Queue *q)
 {
 	QueueElt* elt;
