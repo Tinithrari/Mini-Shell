@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 					printf("d");
 					
 					//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
-					if(!flag[FLAG_R])
+					if(flag[FLAG_R])
 					{
 						enqueue(tail,buffer);
 					}
