@@ -126,4 +126,6 @@ void freeQueue(Queue *queue)
 	
 	for (elt = dequeue(queue); elt != NULL; elt = dequeue(queue))
 		freeQueueElt(elt);
+
+	free(queue);
 }

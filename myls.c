@@ -70,13 +70,11 @@ int main(int argc, char *argv[])
 	
 	if(argc == 0)
 		enqueue(tail,defaut);
-
 	else
-		for(; argv ; argv++)
+		for(; *argv ; argv++)
 			enqueue(tail,*argv);
 
 	for(; ! isQueueEmpty(tail) ;){
-		printf("%d\n", !isQueueEmpty(tail));
 		tmp = dequeue(tail);
 		s = (char *) tmp -> elt;
 
@@ -236,7 +234,7 @@ int main(int argc, char *argv[])
 				close(1);
 				dup(tube[1]);
 				close(tube[1]);
-				execlp("/usr/bin/mimetype","mimetype","-b",elt->d_name,NULL);
+				execlp("/usr/bin/mimetype","mimetype","-b", buffer,NULL);
 				syserror("Execl error", 6);
 			}
 			else
@@ -252,8 +250,10 @@ int main(int argc, char *argv[])
 					bufferMimeType[i] = c ;
 	
 				bufferMimeType[i] = '\0';
-				strncpy(type,bufferMimeType,strchr(bufferMimeType, '/') - bufferMimeType );				
+
+				strncpy(type,bufferMimeType, strchr(bufferMimeType, '/') - bufferMimeType );				
 				type[strchr(bufferMimeType, '/') - bufferMimeType ]  ='\0';
+				close(tube[0]);
 			}
 			if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0)))
 			{
