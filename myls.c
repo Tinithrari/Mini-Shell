@@ -12,6 +12,8 @@
 #include<sys/stat.h>
 #include<pwd.h>
 
+#include "Queue.h"
+
 #define couleur(p) printf("\033[%sm",p)
 #define syserror(m,e) perror(m), exit(e)
 #define fatalerror(m,e) fprintf(stderr, "%s\n", m), exit(e)
@@ -22,6 +24,7 @@
 
 int main(int argc, char *argv[])
 {
+	char * defaut = ".";
 	char flag[2] = {0,0}, bufferErr[128], bufferMimeType[128], type[128];
 	char *s;
 	DIR* d; 		//repertoire
@@ -31,10 +34,16 @@ int main(int argc, char *argv[])
 	struct tm *mtime;
 	pid_t pid;
 	int tube[2];
+	int i;
+
+	Queue * tail;
+	QueueElt * tmp;
 
 	argc--;
 	argv++;
 	
+	tail = createQueue(sizeof(char *));
+
 	//Initialisation des flags en fonction des options choisis
 	for (;argc && (**argv) == '-';)
 	{
@@ -59,8 +68,17 @@ int main(int argc, char *argv[])
 		argc--; argv++;
 	}
 	
-	for(s=(argc==0) ? "." : *(argv); s ;){
+	if(argc == 0)
+		enqueue(tail,defaut);
+
+	else
+		for(; argv ; argv++)
+			enqueue(tail,argv);
+
+	for(tmp = dequeue(tail); ! isQueueEmpty(tail) ; tmp = dequeue(tail)){
 		
+		s = (char *) tmp -> elt;
+
 		//On ouvre le repertoire, si echec, erreur
 		if(!(d = opendir(s))) syserror("Directory problem",1);
 		
@@ -89,22 +107,22 @@ int main(int argc, char *argv[])
 				syserror("Stat error",2);
 			
 			//On regarde si il s'agit d'un repertoire ou non
-            		switch (st.st_mode & S_IFMT) 
+            	switch (st.st_mode & S_IFMT) 
 		    	{
            		case S_IFDIR:     
-				printf("d");
-				//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
-				if(!flag[FLAG_R])
-				{
-					// Ici on ajoute dans la file
-				}
-
-			break;
+					printf("d");
+					
+					//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
+					if(!flag[FLAG_R])
+					{
+						enqueue(tail,buffer);
+					}
+					break;
            		
-			default:       
-				printf("-");               
-			break;
-            		}
+				default:       
+					printf("-");               
+					break;
+            	}
 
 			//Affichage des differents droits associe au fichier 
 			printf("%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
@@ -288,9 +306,8 @@ int main(int argc, char *argv[])
 		//Fermeture du repertoire
 		closedir(d);
 
-		if  (!argc) break;
-		
-		s=*(++argv);
+		freeQueueElt(tmp);
 	}
+	freeQueue(tail);
 	return 0;
 }
