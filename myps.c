@@ -27,14 +27,14 @@ struct sysinfo sysInfo;
 
 typedef struct
 {
-	int uid;
-	int pid;
+	int uid; // x
+	int pid; // x
 	float cpu;
 	float mem;
 	unsigned long vsz;
 	long int rss;
-	int tty;
-	char stat;
+	int tty; // x
+	char stat; // x
 	unsigned long long start;
 	unsigned long time;
 } ProcInfo;
@@ -57,47 +57,35 @@ static int isNumber(char* s)
 	return !(*c);
 }
 
+/**
+ * Get processus information
+ */
 static ProcInfo getProcessusInformation(struct dirent* processus)
 {
 	FILE *file, *statusFile;
-	unsigned long utime, stime;
-	long int waitTimeU, waitTimeS;
 	ProcInfo info;
 	char buffer[256];
-	struct stat procStat;
 	int i;
 
+	// Create the stat file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STAT);
-	// Open the file descriptor to the stat file
 	file = fopen(buffer, "r");
-	stat(buffer, &procStat);
 
-	// Get pid, stat and tty
-	fscanf(file, "%d%*s%c%*d%*d%*d%d", &(info.pid), &(info.stat), &(info.tty));
+	// Get pid(1) 
+	fscanf(file, "%d", &(info->pid));
 
-	// Skip argument
-	fscanf(file, "%*d%*u%*lu%*lu%*lu%*lu");
-		
-	// Get Time
-	fscanf(file, "%lu%lu%ld%ld", &utime, &stime, &waitTimeU, &waitTimeS);
+	// Skip comm(2)
+	fscanf(file, "%*s");
 
-	info.time = utime + stime;
+	// Get state(3)
+	fscanf(file, "%c", &(info->stat));
 
-	// Skip other arguments
-	fscanf(file, "%*ld%*ld%*ld%*ld");
+	// Skip ppid(4), pgrp(5), session(6)
+	fscanf(file, "%*d");
+	fscanf(file, "%*d");
+	fscanf(file, "%*d");
 
-	// Get start time, vsize, and rss
-	fscanf(file, "%llu%lu%ld", &(info.start), &(info.vsz), &(info.rss));
-
-	// Compute the cpu usage percentage
-	info.cpu = (info.time / (info.time + waitTimeU + waitTimeS)) * 100;
-	info.time /= CLOCKS_PER_SEC;
-	info.start /= CLOCKS_PER_SEC;
-	
-
-	// Compute the memory usage percentage
-	info.mem = ( ( (float) info.rss ) / sysInfo.totalram ) * 100;
-
+	// Create the status file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STATUS);
 	statusFile = fopen(buffer, "r");
 
