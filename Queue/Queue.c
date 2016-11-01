@@ -1,5 +1,4 @@
 #include "Queue.h"
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -25,7 +24,7 @@ Queue* createQueue(size_t eltSize)
 	return q;
 }
 
-int enqueue(Queue* queue, void *elt)
+int enqueue(Queue* queue, void *e)
 {
 	QueueElt* elt;
 
@@ -49,7 +48,7 @@ int enqueue(Queue* queue, void *elt)
 	}
 
 	// Copie de la structure
-	memcpy(elt->elt, elt, queue->eltSize);
+	memcpy(elt->elt, e, queue->eltSize);
 	elt->next = NULL;
 
 	// Remplit la file

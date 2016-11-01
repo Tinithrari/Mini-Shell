@@ -5,7 +5,7 @@
  * @version 1
  * @date 13 Octobre 2016
  */
-
+#include <stddef.h>
 /**
  * @struct queueElt
  * @brief Element de la file
