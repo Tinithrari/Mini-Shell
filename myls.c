@@ -73,10 +73,11 @@ int main(int argc, char *argv[])
 
 	else
 		for(; argv ; argv++)
-			enqueue(tail,argv);
+			enqueue(tail,*argv);
 
-	for(tmp = dequeue(tail); ! isQueueEmpty(tail) ; tmp = dequeue(tail)){
-		
+	for(; ! isQueueEmpty(tail) ;){
+		tmp = dequeue(tail);
+		printf("%s\n", "coucou");
 		s = (char *) tmp -> elt;
 
 		//On ouvre le repertoire, si echec, erreur

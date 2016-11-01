@@ -24,44 +24,44 @@ Queue* createQueue(size_t eltSize)
 	return q;
 }
 
-int enqueue(Queue* queue, void *e)
+int enqueue(Queue* queue, void *elt)
 {
-	QueueElt* elt;
+	QueueElt* qElt;
 
 	// Vériification des paramètres
 	if (queue == NULL || elt == NULL)
 		return 0;
 
-	elt = (QueueElt*) malloc(sizeof(QueueElt));
+	qElt = (QueueElt*) malloc(sizeof(QueueElt));
 
 	// Si l'allocation échoue, retourne 0
-	if (elt == NULL)
+	if (qElt == NULL)
 		return 0;
 
-	elt->elt = malloc(queue->eltSize);
+	qElt->elt = malloc(queue->eltSize);
 
 	// Retourne 0 si l'allocation echoue
-	if (elt->elt == NULL)
+	if (qElt->elt == NULL)
 	{
-		free(elt);
+		free(qElt);
 		return 0;
 	}
 
 	// Copie de la structure
-	memcpy(elt->elt, e, queue->eltSize);
-	elt->next = NULL;
+	memcpy(qElt->elt, elt, queue->eltSize);
+	qElt->next = NULL;
 
 	// Remplit la file
 	if (queue->head == NULL)
-		queue->head = elt;
+		queue->head = qElt;
 
 	if (queue->tail != NULL)
-		queue->tail->next = elt;
+		queue->tail->next = qElt;
 	
 	// Place l'élément en dernière position
-	queue->tail = elt;
+	queue->tail = qElt;
 
-	elt->next = NULL;
+	qElt->next = NULL;
 
 	return 1;
 }
