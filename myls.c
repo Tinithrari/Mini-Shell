@@ -7,6 +7,7 @@
 #include<unistd.h>
 #include<stdio_ext.h>
 
+#include<sys/wait.h>
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<pwd.h>
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
 		 	printf("%c ",(st.st_mode & S_IXOTH) ? 'x' : '-' );
 		    
 			//Affichage du nombre de liens physique
-			printf("%d ",st.st_nlink);
+			printf("%u ",st.st_nlink);
 
 			//Affichage du nom de l'utilisateur tout en testant la valeur de retour de pwd, erreur sinon
 			if((pwd = getpwuid (st.st_uid)) == NULL)
