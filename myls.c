@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
 	for(; ! isQueueEmpty(tail) ;){
 		tmp = dequeue(tail);
 		s = (char *) tmp -> elt;
+		printf("%s:\n", s);
 
 		//On ouvre le repertoire, si echec, erreur
 		if(!(d = opendir(s))) syserror("Directory problem",1);
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
 					//Dans le cadre du -R on ajoute le repertoire dans la file si le flag est a 1
 					if(flag[FLAG_R])
 					{
-						enqueue(tail,buffer);
+						enqueue(tail,buffer, strlen(buffer) + 1);
 					}
 					break;
            		

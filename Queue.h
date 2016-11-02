@@ -27,7 +27,6 @@ typedef struct queueElt {
 typedef struct queue{
 	QueueElt *head; /*!< Pointeur sur le premier élément de la file */
 	QueueElt *tail; /*!< Pointeur sur le dernier élément de la file */
-	size_t eltSize; /*!< Taille d'un élément */
 } Queue;
 
 /**

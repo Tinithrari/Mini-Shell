@@ -19,12 +19,11 @@ Queue* createQueue(size_t eltSize)
 	// Prépare les champs
 	q->head = NULL;
 	q->tail = NULL;
-	q->eltSize = eltSize;
 
 	return q;
 }
 
-int enqueue(Queue* queue, void *elt)
+int enqueue(Queue* queue, void *elt, size_t eltSize)
 {
 	QueueElt* qElt;
 
@@ -38,7 +37,7 @@ int enqueue(Queue* queue, void *elt)
 	if (qElt == NULL)
 		return 0;
 
-	qElt->elt = malloc(queue->eltSize);
+	qElt->elt = malloc(eltSize);
 
 	// Retourne 0 si l'allocation echoue
 	if (qElt->elt == NULL)
@@ -48,7 +47,7 @@ int enqueue(Queue* queue, void *elt)
 	}
 
 	// Copie de la structure
-	memcpy(qElt->elt, elt, queue->eltSize);
+	memcpy(qElt->elt, elt, eltSize);
 	qElt->next = NULL;
 
 	// Remplit la file
