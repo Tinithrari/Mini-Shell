@@ -67,8 +67,9 @@ static ProcInfo getProcessusInformation(struct dirent* processus)
 	ProcInfo info;
 	char buffer[256];
 	int i;
+	double tempsCpu, tempsTotal;
 	unsigned long utime, stime, guest_time, rsslim;
-	long int cutime, cstime;
+	long int cutime, cstime, cguest_time;
 
 	// Create the stat file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STAT);
@@ -78,44 +79,75 @@ static ProcInfo getProcessusInformation(struct dirent* processus)
 	fscanf(file, "%d", &(info.pid));
 
 	// Skip comm(2)
-	fscanf(file, "%*s");
+	fscanf(file, " %*s");
 
 	// Get state(3)
-	fscanf(file, "%c", &(info.stat));
+	fscanf(file, " %c", &(info.stat));
 
 	// Skip ppid(4), pgrp(5), session(6), tty(7)
 	// tpgid(8), flags(9), minflt(10), cminflt(11), majflt(12),
 	// cmajflt(13)
-	fscanf(file, "%*d");
-	fscanf(file, "%*d");
-	fscanf(file, "%*d");
-	fscanf(file, "%*d");
-	fscanf(file, "%*d");
-	fscanf(file, "%*u");
-	fscanf(file, "%*lu");
-	fscanf(file, "%*lu");
-	fscanf(file, "%*lu");
-	fscanf(file, "%*lu");
+	fscanf(file, " %*d");
+	fscanf(file, " %*d");
+	fscanf(file, " %*d");
+	fscanf(file, " %*d");
+	fscanf(file, " %*d");
+	fscanf(file, " %*u");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
 
 	// Stocking utime(14), stime(15), cutime(16), cstime(17)
-	fscanf(file, "%lu", &utime);
-	fscanf(file, "%lu", &stime);
-	fscanf(file, "%ld", &cutime);
-	fscanf(file, "%ld", &cstime);
+	fscanf(file, " %lu", &utime);
+	fscanf(file, " %lu", &stime);
+	fscanf(file, " %ld", &cutime);
+	fscanf(file, " %ld", &cstime);
 
 	// Skipping priority(18), nice(19), num_threads(20)
 	// itrealvalue(21)
-	fscanf(file, "%*ld");
-	fscanf(file, "%*ld");
-	fscanf(file, "%*ld");
-	fscanf(file, "%*ld");
+	fscanf(file, " %*ld");
+	fscanf(file, " %*ld");
+	fscanf(file, " %*ld");
+	fscanf(file, " %*ld");
 
 	// Get starttime(22), vsize(23), rss(24), rsslim(25)
-	fscanf(file, "%llu", &(info.start));
-	fscanf(file, "%lu", &(info.vsz));
-	fscanf(file, "%ld", &(info.rss));
-	fscanf(file, "%lu", &rsslim);
+	fscanf(file, " %llu", &(info.start));
+	fscanf(file, " %lu", &(info.vsz));
+	fscanf(file, " %ld", &(info.rss));
+	fscanf(file, " %lu", &rsslim);
 	
+	// Skip startcode(26), endcode(27), startstack(28)
+	// kstkesp(29), kstkeip(30), signal(31), blocked(32),
+	// sigignore(33), sigcatch(34), wchan(35), nswap(36), cnswap(37),
+	// exit_signal(38), processor(39), rt_priority(40), policy(41),
+	// delayacct_blkio_ticks(42)
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*lu");
+	fscanf(file, " %*d");
+
+	fscanf(file, " %*d");
+	fscanf(file, " %*u");
+	fscanf(file, " %*u");
+	fscanf(file, " %*llu");
+
+	// Get guest_time(43), cguest_time(44)
+	fscanf(file, " %lu %ld", &guest_time, &cguest_time);
+
+	tempsCpu = (double)(utime + stime + cutime - guest_time);
+	tempsTotal = (double)(utime + stime + cutime + cstime - guest_time - cguest_time);
+	
+	tempsCpu /= (tempsTotal > tempsCpu ? tempsTotal : tempsCpu);
 
 	// Create the status file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STATUS);
@@ -161,8 +193,6 @@ int main(void)
 			continue;
 		
 		info = getProcessusInformation(processus);
-
-		printf("%d:%d\n", (int)major(info.tty), (int)minor(info.tty));
 /*
 		printf("%s\t%d\t%.1f\t%.1f\t%lu\t%ld\t%d\t%c\t%llu\t%lu\n", getpwuid(info.uid)->pw_name, info.pid, info.cpu, info.mem, info.vsz, info.rss, info.tty, info.stat, info.start, info.time);*/
 	}
