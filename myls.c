@@ -262,12 +262,13 @@ int main(int argc, char *argv[])
 			}
 			else if(strcmp(type,"application") == 0)
 			{	
-				if( strstr(strchr(bufferMimeType, '/'), "x-executable")  )
+				if( strstr(strchr(bufferMimeType, '/'), "executable")  )
 				{
 					couleur("32");
 				}
-				else if(! strstr(strchr(bufferMimeType, '/'), "x-object"))
+				else if((strstr(strchr(bufferMimeType, '/'), "compressed")) || (strstr(strchr(bufferMimeType, '/'), "archive")) || (strstr(strchr(bufferMimeType, '/'), "zip")))
 				{
+					//! strstr(strchr(bufferMimeType, '/'), "x-object")
 					couleur("31");
 				}
 			}
