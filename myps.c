@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/sysinfo.h>
+#include <sys/sysmacros.h>
 #include <dirent.h>
 
 #include <stdio.h>
@@ -22,7 +23,7 @@
 #define PROC_STATUS "/status"
 
 #define LINE_BEFORE_UID 7
-
+#define TTY_LINE_SIZE 128
 struct sysinfo sysInfo;
 
 typedef struct
@@ -33,9 +34,9 @@ typedef struct
 	float mem;
 	unsigned long vsz;
 	long int rss;
-	int tty; // x
+	char tty[TTY_LINE_SIZE];
 	char stat; // x
-	unsigned long long start;
+	unsigned long long start; //x
 	unsigned long time;
 } ProcInfo;
 
@@ -66,24 +67,55 @@ static ProcInfo getProcessusInformation(struct dirent* processus)
 	ProcInfo info;
 	char buffer[256];
 	int i;
+	unsigned long utime, stime, guest_time, rsslim;
+	long int cutime, cstime;
 
 	// Create the stat file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STAT);
 	file = fopen(buffer, "r");
 
 	// Get pid(1) 
-	fscanf(file, "%d", &(info->pid));
+	fscanf(file, "%d", &(info.pid));
 
 	// Skip comm(2)
 	fscanf(file, "%*s");
 
 	// Get state(3)
-	fscanf(file, "%c", &(info->stat));
+	fscanf(file, "%c", &(info.stat));
 
-	// Skip ppid(4), pgrp(5), session(6)
+	// Skip ppid(4), pgrp(5), session(6), tty(7)
+	// tpgid(8), flags(9), minflt(10), cminflt(11), majflt(12),
+	// cmajflt(13)
 	fscanf(file, "%*d");
 	fscanf(file, "%*d");
 	fscanf(file, "%*d");
+	fscanf(file, "%*d");
+	fscanf(file, "%*d");
+	fscanf(file, "%*u");
+	fscanf(file, "%*lu");
+	fscanf(file, "%*lu");
+	fscanf(file, "%*lu");
+	fscanf(file, "%*lu");
+
+	// Stocking utime(14), stime(15), cutime(16), cstime(17)
+	fscanf(file, "%lu", &utime);
+	fscanf(file, "%lu", &stime);
+	fscanf(file, "%ld", &cutime);
+	fscanf(file, "%ld", &cstime);
+
+	// Skipping priority(18), nice(19), num_threads(20)
+	// itrealvalue(21)
+	fscanf(file, "%*ld");
+	fscanf(file, "%*ld");
+	fscanf(file, "%*ld");
+	fscanf(file, "%*ld");
+
+	// Get starttime(22), vsize(23), rss(24), rsslim(25)
+	fscanf(file, "%llu", &(info.start));
+	fscanf(file, "%lu", &(info.vsz));
+	fscanf(file, "%ld", &(info.rss));
+	fscanf(file, "%lu", &rsslim);
+	
 
 	// Create the status file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STATUS);
@@ -130,7 +162,9 @@ int main(void)
 		
 		info = getProcessusInformation(processus);
 
-		printf("%s\t%d\t%.1f\t%.1f\t%lu\t%ld\t%d\t%c\t%llu\t%lu\n", getpwuid(info.uid)->pw_name, info.pid, info.cpu, info.mem, info.vsz, info.rss, info.tty, info.stat, info.start, info.time);
+		printf("%d:%d\n", (int)major(info.tty), (int)minor(info.tty));
+/*
+		printf("%s\t%d\t%.1f\t%.1f\t%lu\t%ld\t%d\t%c\t%llu\t%lu\n", getpwuid(info.uid)->pw_name, info.pid, info.cpu, info.mem, info.vsz, info.rss, info.tty, info.stat, info.start, info.time);*/
 	}
 	closedir(procDir);
 
