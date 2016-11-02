@@ -149,6 +149,8 @@ static ProcInfo getProcessusInformation(struct dirent* processus)
 	
 	tempsCpu /= (tempsTotal > tempsCpu ? tempsTotal : tempsCpu);
 
+	printf("Temps CPU Utilisé : %d%%\n", tempsCpu);
+
 	// Create the status file path and open it
 	sprintf(buffer, "%s%s%s", PROC_FOLDER, processus->d_name, PROC_STATUS);
 	statusFile = fopen(buffer, "r");
