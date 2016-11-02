@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	argc--;
 	argv++;
 	
-	tail = createQueue(sizeof(char *));
+	tail = createQueue();
 
 	//Initialisation des flags en fonction des options choisis
 	for (;argc && (**argv) == '-';)
@@ -69,10 +69,10 @@ int main(int argc, char *argv[])
 	}
 	
 	if(argc == 0)
-		enqueue(tail,defaut);
+		enqueue(tail,defaut, strlen(defaut) + 1);
 	else
 		for(; *argv ; argv++)
-			enqueue(tail,*argv);
+			enqueue(tail,*argv, strlen(*argv + 1));
 
 	for(; ! isQueueEmpty(tail) ;){
 		tmp = dequeue(tail);

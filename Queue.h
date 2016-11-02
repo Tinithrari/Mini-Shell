@@ -42,19 +42,19 @@ typedef struct queue{
 /**
  * @fn Queue* createQueue(size_t eltSize)
  * @brief Créer une file
- * @param eltSize Taille des éléments contenus dans la file
  * @return Retourne un pointeur sur la file créer, NULL si l'allocation mémoire échoue
  */
-Queue* createQueue(size_t eltSize);
+Queue* createQueue();
 
 /**
  * @fn int enqueue(Queue *queue, void *elt)
  * @brief Enfile un élément à la file passé en paramètre
  * @param queue Pointeur sur la file où enfiler l'élément
  * @param elt pointeur sur l'élément à ajouter
+ * @param eltSize Taille de l'élément à copier
  * @return 1 si l'élément a été enfilé, 0 si l'allocation échoue
  */
-int enqueue(Queue *queue, void *elt);
+int enqueue(Queue *queue, void *elt, size_t eltSize);
 
 /**
  * @fn QueueElt* dequeue(Queue* queue)

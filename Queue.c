@@ -2,13 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-Queue* createQueue(size_t eltSize)
+Queue* createQueue()
 {
 	Queue *q;
-
-	// Si la taille est nulle, return NULL
-	if (! eltSize)
-		return NULL;
 
 	q = (Queue*) malloc(sizeof(Queue));
 
