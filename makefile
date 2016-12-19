@@ -31,8 +31,23 @@ commande-test:
 	gcc -g -c "Unit Test"/testCommande.c
 	gcc -o TestCommande testCommande.o Commande.o Redirection.o
 
-clean-test:
+clean-test-commande:
 	rm testCommande.o Commande.o Redirection.o
 	rm TestCommande
 	test -e Wrong.txt && rm Wrong.txt
 	test -e test.txt && rm test.txt
+sequence:
+	make commande
+	gcc -c Sequence.c
+
+sequence-dbg:
+	make commande-dbg
+	gcc -g -c Sequence.c
+
+sequence-test:
+	make sequence-dbg
+	gcc -g -c "Unit Test"/testSequence.c
+	gcc -g -o TestSequence testSequence.o Commande.o Redirection.o Sequence.o
+
+clean-test-sequence:
+	rm TestSequence testSequence.o Commande.o Redirection.o Sequence.o
