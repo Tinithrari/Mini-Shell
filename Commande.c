@@ -6,8 +6,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "struct/ArrayList.h"
 #include "Commande.h"
 #include "Redirection.h"
+#include "Job.h"
 
 #define IN_DEFAULT 0
 #define OUT_DEFAULT 1
@@ -17,6 +19,9 @@
 
 #define OPT_SIZE 2
 #define OFFSET 2
+
+int lastReturn = 0;
+ArrayList *jobs = createArray(sizeof(Job));
 
 Commande* newCommande(string s)
 {
@@ -113,7 +118,9 @@ int addOptionCommande(Commande *c, string p)
 
     // Effectue la copie et décale le pointeur NULL
     strcpy(c->options[c->nOptions], p);
-    c->options[++(c->nOptions)] = NULL;
+    c->options[(c->nOptions) + 1] = NULL;
+
+    c->nOptions++;
 
     return 1;
 }
@@ -121,31 +128,41 @@ int addOptionCommande(Commande *c, string p)
 int executeCommande(Commande *c)
 {
     pid_t pid;
+    int status;
 
+    // Vérifie si la commande n'est pas nulle
     if (c == NULL)
     {
         errno = EINVAL;
         return 0;
     }
 
+    // Essaye de faire un fork, en cas d'erreur, retourne 0
     if ( (pid = fork()) == ERROR)
         return 0;
 
+    // Code du fils
     if (! pid)
     {
         int i;
+
+        // Redirige l'entrée si besoin
         if (c->in != IN_DEFAULT)
         {
             close(IN_DEFAULT);
             dup(c->in);
             close(c->in);
         }
+
+        // Redirige la sortie si besoin
         if (c->out != OUT_DEFAULT)
         {
             close(OUT_DEFAULT);
             dup(c->out);
             close(c->out);
         }
+
+        // Redirige la sortie d'erreur si besoin
         if (c->err != ERR_DEFAULT)
         {
             close(ERR_DEFAULT);
@@ -158,12 +175,14 @@ int executeCommande(Commande *c)
 
         if (execvp(c->commande, c->options) == ERROR)
         {
+            perror("Exec error");
             deleteCommande(c);
             cleanCommandeEnv();
             exit(1);
         }
     }
 
+    // Code du père
     if (c->in != IN_DEFAULT)
         close(c->in);
 
@@ -173,10 +192,20 @@ int executeCommande(Commande *c)
     if (c->err != ERR_DEFAULT)
         close(c->err);
 
+    // Si le code est exécuté en premier plan
     if (! c->background)
-        wait(NULL);
+    {
+        wait(&status);
 
-    // Todo Faire des vérifications
+        lastReturn = (WIFEXITED(status) ? WEXITSTATUS(status) : ERROR);
+    }
+    else
+    {
+        Job j;
+        // Enregistrement dans la table des jobs
+        initJob(&j, pid, RUNNING, c);
+        addInArray(jobs, j);
+    }
 
     return 1;
 }
