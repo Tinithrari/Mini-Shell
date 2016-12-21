@@ -21,6 +21,7 @@
 #define OFFSET 2
 
 int lastReturn = 0;
+pid_t lastPid = 0;
 ArrayList *jobs = createArray(sizeof(Job));
 
 Commande* newCommande(string s)
@@ -198,6 +199,7 @@ int executeCommande(Commande *c)
         wait(&status);
 
         lastReturn = (WIFEXITED(status) ? WEXITSTATUS(status) : ERROR);
+        lastPid = pid;
     }
     else
     {
