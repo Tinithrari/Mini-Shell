@@ -191,7 +191,7 @@ int pipeCommande(Commande *c1, Commande *c2)
     return 1;
 }
 
-void cleanCommandeEnv()
+void cleanCommandeEnv(void)
 {
     int i;
 

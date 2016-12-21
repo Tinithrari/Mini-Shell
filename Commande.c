@@ -22,6 +22,7 @@
 
 int lastReturn = 0;
 pid_t lastPid = 0;
+Job *running = NULL;
 ArrayList *jobs = createArray(sizeof(Job));
 
 Commande* newCommande(string s)
@@ -196,7 +197,11 @@ int executeCommande(Commande *c)
     // Si le code est exécuté en premier plan
     if (! c->background)
     {
+        Job j;
+        initJob(&j, pid, RUNNING, c);
+        running = &j;
         wait(&status);
+        running = NULL;
 
         lastReturn = (WIFEXITED(status) ? WEXITSTATUS(status) : ERROR);
         lastPid = pid;
