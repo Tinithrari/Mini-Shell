@@ -1,76 +1,63 @@
-#include <errno.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 
 #include "LinkedList.h"
-
-void initLL(LinkedList *ll, size_t eltSize)
-{
-    // Vérifie les arguments
-    if (ll == NULL || ! eltSize)
-        return;
-
-    // Remplit la structure
-    ll->eltSize = eltSize;
-    ll->head = NULL;
-    ll->tail = NULL;
-}
 
 LinkedList *newLL(size_t eltSize)
 {
     LinkedList *ll;
 
+    // Check argument
     if (! eltSize)
     {
         errno = EINVAL;
         return NULL;
     }
 
-    // Essaye d'allouer la liste chainée
     ll = (LinkedList*) malloc(sizeof(LinkedList));
 
     if (ll == NULL)
+    {
+        errno = ENOMEM;
         return NULL;
+    }
 
-    // Initialise la liste chainée
-    initLL(ll);
-
-    return ll;
+    ll->eltSize = eltSize;
+    ll->head = NULL;
+    ll->tail = NULL;
+    ll->nElement = 0;
 }
 
 int addEltLL(LinkedList *ll, void *elt)
 {
     struct nodeLL *node;
 
-    // Vérifie les arguments
     if (ll == NULL || elt == NULL)
-    {
-        errno = EINVAL;
         return 0;
-    }
 
-    // Essaye d'allouer un nœud
     node = (struct nodeLL*) malloc(sizeof(struct nodeLL));
 
     if (node == NULL)
         return 0;
 
-    // Essaye d'allouer un élément pour le nœud
-    node->value = malloc(ll->eltSize);
+    node->value = malloc(sizeof(ll->eltSize));
 
     if (node->value == NULL)
     {
-        free(node->value);
+        free(node);
         errno = ENOMEM;
         return 0;
     }
 
-    // Copie la valeur dans le nœud
     memcpy(node->value, elt, ll->eltSize);
+    node->next = NULL;
 
-    // Si aucun élément dans la liste
-    if (tail == NULL)
-        ll->head = ll->tail = node;
+    if (! ll->nElement)
+    {
+        ll->head = node;
+        ll->tail = node;
+    }
     else
     {
         ll->tail->next = node;
@@ -84,57 +71,64 @@ int addEltLL(LinkedList *ll, void *elt)
 
 void* getEltLL(LinkedList *ll, unsigned int index)
 {
-    int i;
     struct nodeLL *ptr;
+    int i;
 
-    // Vérifie les arguments
     if (ll == NULL || index >= ll->nElement)
     {
         errno = EINVAL;
         return NULL;
     }
 
-    // Va au ième élément
-    for (i = 0, ptr = ll->head; i < index - 1; i++, ptr = ptr->next);
+    for (i = 0, ptr = ll->head; i < index; ptr = ptr->next, i++);
 
-    // retourne la valeur de l'élément
     return ptr->value;
 }
 
-void *removeEltLL(LinkedList *ll, unsigned int index)
+void* removeEltLL(LinkedList *ll, unsigned int index)
 {
-    int i;
-    void *value;
     struct nodeLL *ptr;
+    void *value;
 
-    // Vérifie les arguments
     if (ll == NULL || index >= ll->nElement)
     {
         errno = EINVAL;
         return NULL;
     }
 
-    // Va au ième élément
-    for (i = 0, ptr = ll->head; i < index - 1; i++, ptr = ptr->next);
+    value = malloc(ll->eltSize);
 
-    // Retire le nœud de la liste, récupère sa valeur, et le libère
-    if (! i)
+    if (value == NULL)
+        return NULL;
+
+    ptr = ll->head;
+    if (! index)
     {
+
         ll->head = ll->head->next;
-        value = ptr->value;
+        memcpy(value, ptr->value, ll->eltSize);
+        free(ptr->value);
         free(ptr);
+        ll->nElement--;
+        return value;
     }
     else
     {
-        struct nodeLL *node = ptr->next;
-        ptr->next = node->next;
-        value = node->value;
-        free(node);
+        struct nodeLL *elt;
+        int i;
+
+        for (i = 0; i < index - 1; ptr = ptr->next, i++);
+
+        elt = ptr->next;
+        ptr->next = elt->next;
+
+        memcpy(value, elt->value, ll->eltSize);
+
+        free(elt->value);
+        free(elt);
+        ll->nElement--;
+        return value;
     }
-
-    ll->nElement--;
-
-    return value;
 }
 
 void cleanLL(LinkedList *ll)
@@ -143,7 +137,7 @@ void cleanLL(LinkedList *ll)
         return;
 
     for (;ll->nElement;)
-        removeEltLL(0);
+        free(removeEltLL(ll, 0));
 }
 
 void deleteLL(LinkedList *ll)

@@ -24,14 +24,6 @@ struct linkedlist
 typedef struct linkedlist LinkedList;
 
 /********************************************//**
- * \brief initialise une liste chainée
- *
- * \param ll Un pointeur sur liste chainée
- * \param eltSize La taille des éléments à stocker
- ***********************************************/
-void initLL(LinkedList *ll, size_t eltSize);
-
-/********************************************//**
  * \brief Créer une nouvelle liste chainée
  *
  * \param eltSize La taille des éléments à stocker
