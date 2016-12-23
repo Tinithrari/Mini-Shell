@@ -1,4 +1,11 @@
 /********************************************//**
+ * \brief Table de hachage
+ * \file Hashmap.h
+ * \author Xavier Heugue
+ * \see stdlib.h, LinkedList.h
+ ***********************************************/
+
+/********************************************//**
  * \brief Pointeur sur fonction de hachage
  ***********************************************/
 typedef int (*hachage)(void *elt);
@@ -25,7 +32,7 @@ struct hashmap
     size_t keySize;
     size_t eltSize;
     size_t mapSize;
-    LinkedList* map;
+    LinkedList** map;
     hachage hash;
     compare cmp;
 };
@@ -50,7 +57,7 @@ typedef struct hashmap Hashmap;
  * \param cmp Fonction de comparaison des clés
  * \return Un pointeur sur une table de hachage
  ***********************************************/
-Hashmap newHashmap(size_t keySize, size_t eltSize, size_t mapSize, hachage hash, compare cmp);
+Hashmap* newHashmap(size_t keySize, size_t eltSize, size_t mapSize, hachage hash, compare cmp);
 
 /********************************************//**
  * \brief Ajout d'un élément dans la table de hachage
@@ -59,7 +66,7 @@ Hashmap newHashmap(size_t keySize, size_t eltSize, size_t mapSize, hachage hash,
  * \param key La clé de l'élément à ajouter
  * \param elt L'élément à ajouter
  * \return 1 si l'insertion a réussi, 0 sinon
- *
+ * \deprecated Utiliser updateEltHashMap directement
  ***********************************************/
 int addEltHashmap(Hashmap *h, void *key, void *elt);
 
