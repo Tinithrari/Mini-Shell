@@ -14,10 +14,10 @@
 #define fatalerror(m,e) fprintf(stderr,m), exit(e)
 #define couleurdefaut printf("\033[0m")
 
-//Incrementation semaphore
+//Décrementation semaphore
 struct sembuf P={0,-1,0};
 
-//Decrementation semaphore
+//Incrementation semaphore
 struct sembuf V={0,1,0};
 
 //Nombre de philosophes
