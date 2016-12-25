@@ -1,11 +1,14 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
+#include "Commande.h"
+#include "struct/ArrayList.h"
 #include "Redirection.h"
 #include "Job.h"
 #include "JobCommand.h"
-#include "struct/ArrayList.h"
 
 extern ArrayList *jobs;
 extern Job *running;
@@ -16,7 +19,7 @@ static void cleanShell(void)
 
     // Supprime les commandes
     for (i = 0; i < jobs->nbElement; i++)
-        deleteCommande(jobs->array[i].commande);
+	    deleteCommande(((Job*)jobs->array)[i].commande);
 
     // Supprime le tableau de Job
     deleteArray(jobs);
@@ -37,7 +40,7 @@ void interruption(int sig)
 
     // Tue les processus
     for (i = 0; i < jobs->nbElement; i++)
-        kill(jobs->array[i].pid, SIGKILL);
+        kill(((Job*)jobs->array)[i].pid, SIGKILL);
 
     cleanShell();
     exit(0);
@@ -47,9 +50,11 @@ void stopJob(int sig)
 {
     if (running != NULL)
     {
-        kill(running.pid, SIGTSTP);
-        running.etat = STOPPED;
-        addInArray(jobs, j);
+        kill(running->pid, SIGTSTP);
+        running->etat = STOPPED;
+        addInArray(jobs, running);
+	deleteCommande(running->commande);
+	free(running);
     }
 }
 
@@ -58,5 +63,5 @@ void myjobs(void)
     int i;
 
     for (i = 0; i < jobs->nbElement; i++)
-        printf("[%d] %d %s %s\n", jobs->array[i].noJob, jobs->array[i].pid, jobs->array[i].etat == RUNNING ? "En cours d'exécution" : "Stoppé", jobs->array[i].commande->commande);
+        printf("[%d] %d %s %s\n", ((Job*)jobs->array)[i].noJob, ((Job*)jobs->array)[i].pid, ((Job*)jobs->array)[i].etat == RUNNING ? "En cours d'exécution" : "Stoppé", ((Job*)jobs->array)[i].commande->commande);
 }

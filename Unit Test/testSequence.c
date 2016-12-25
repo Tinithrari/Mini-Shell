@@ -9,12 +9,15 @@
 #include <dirent.h>
 #include <errno.h>
 
+#include "../struct/ArrayList.h"
+
 #define command1 "/usr/bin/test"
 #define command2 "mkdir"
 #define command3 "rmdir"
 #define arg1 "-d"
 #define arg2 "test"
 
+extern ArrayList *jobs;
 
 void test1()
 {
@@ -123,6 +126,7 @@ void test2()
     dir = opendir(arg2);
     assert(dir == NULL && errno == ENOENT);
     closedir(dir);
+    deleteArray(jobs);
 }
 
 int main(void)

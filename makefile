@@ -18,6 +18,9 @@ make myls:
 	gcc -c myls.c
 	gcc -o myls myls.o Queue.o
 
+job:
+	gcc -c Job.c JobCommand.c
+
 commande:
 	gcc -c Commande.c
 	gcc -c Redirection.c
@@ -46,8 +49,10 @@ sequence-dbg:
 
 sequence-test:
 	make sequence-dbg
+	make job
+	gcc -g -c struct/ArrayList.c
 	gcc -g -c "Unit Test"/testSequence.c
-	gcc -g -o TestSequence testSequence.o Commande.o Redirection.o Sequence.o
+	gcc -g -o TestSequence testSequence.o Commande.o Redirection.o Sequence.o Job.o JobCommand.o ArrayList.o
 
 clean-test-sequence:
 	rm TestSequence testSequence.o Commande.o Redirection.o Sequence.o

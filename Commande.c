@@ -23,7 +23,7 @@
 int lastReturn = 0;
 pid_t lastPid = 0;
 Job *running = NULL;
-ArrayList *jobs = createArray(sizeof(Job));
+ArrayList *jobs;
 
 Commande* newCommande(string s)
 {
@@ -211,7 +211,7 @@ int executeCommande(Commande *c)
         Job j;
         // Enregistrement dans la table des jobs
         initJob(&j, pid, RUNNING, c);
-        addInArray(jobs, j);
+        addInArray(jobs, &j);
     }
 
     return 1;
