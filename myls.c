@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 
 #include "Queue.h"
+#include "myls.h"
 
 #define syserror(m,e) perror(m), exit(e)
 #define fatalerror(m,e) fprintf(stderr, "%s\n", m), exit(e)
@@ -78,10 +79,7 @@ Queue* stockageFichiers(int nbElt, char *nosFichiers[])
 	else
 	{
 		for(i = 1; i < nbElt; i++)
-		{
-			printf("%s\n",nosFichiers[i]);
 			enqueue(q, nosFichiers[i], strlen(nosFichiers[i]) + 1);
-		}
 	}
 	
 	return q;
@@ -99,10 +97,8 @@ Queue* deleteOption (int nbElt, char *tab[])
 	for(i = 1; i < nbElt; i++)
 	{
 		if((strcmp(tab[i],"-a") != 0) && (strcmp(tab[i],"-R") != 0) && (strcmp(tab[i],"-aR") != 0) && (strcmp(tab[i],"-Ra") != 0))
-		{
-			printf("%s\n",tab[i]);
 			enqueue(q, tab[i], strlen(tab[i]) + 1);
-		}
+		
 	}
 	return q;
 } 
@@ -112,6 +108,7 @@ int verif_fichiers(int nbParam, char * chaine[])
 {
 	int i, boolean = 1;
 	DIR *d;
+	struct stat st;
 	
 	if(chaine == NULL)
 		return 1;
@@ -122,20 +119,168 @@ int verif_fichiers(int nbParam, char * chaine[])
 			continue;
 		
 		if((d = opendir(chaine[i])) == NULL)
-			return 1;
+		{	
+			if(stat(chaine[i],&st) == -1)
+			{	
+				printf("ls: impossible d'accéder à '%s': Aucun fichier ou dossier de ce type\n",chaine[i]);
+				//return 1;	
+			}	
+		}
 	}	
 	
 	return 0;
+}
+
+//Affichage des droits
+void affiche_droits2(struct stat st, char buffer[])
+{	
+	int i = 0;
+	char chaine[512];
+
+	//Affichage des differents droits associe au fichier 
+	sprintf(chaine + i++,"-");
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IRUSR) ? 'r' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IWUSR) ? 'w' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IXUSR) ? 'x' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IRGRP) ? 'r' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IWGRP) ? 'w' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IXGRP) ? 'x' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IROTH) ? 'r' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IWOTH) ? 'w' : '-' );
+	sprintf(chaine + i++,"%c",(st.st_mode & S_IXOTH) ? 'x' : '-' );
+	
+	printf("%s ",chaine);
+}
+
+//Affichage du nom du fichier
+void affiche_nom2(struct stat st, char buffer[])
+{
+	char bufMime[128], type[128];
+	int tube[2];
+	pid_t pid;
+	int status, i;
+	char c;
+	
+	if(pipe(tube) == ERR)
+		syserror("Pipe problem",4);
+
+	if((pid = fork()) == ERR)
+		syserror("Fork problem", 5);
+
+			
+	if(! pid)
+	{
+		close(tube[0]);
+		__fpurge(stdout); // Purge stdout
+		close(1);
+		dup(tube[1]);
+		close(tube[1]);
+		execlp("/usr/bin/mimetype","mimetype","-b", buffer,NULL);
+		syserror("Execl error", 6);
+	}
+	
+	else
+	{
+		close(tube[1]);
+		wait(&status);
+
+		for(i = 0; (read(tube[0],&c,sizeof(char))) && c != '\n'; i++)
+			bufMime[i] = c;
+			
+		bufMime[i] = '\0';
+
+		strncpy(type,bufMime, strchr(bufMime, '/') - bufMime);				
+		type[strchr(bufMime, '/') - bufMime]  ='\0';
+		close(tube[0]);
+	}
+			
+	if(((strcmp(type,"audio") == 0) || (strcmp(type,"image") == 0)))
+	{
+		couleur("35");
+	}
+	
+	else if(strcmp(type,"application") == 0)
+		{	
+			if( strstr(strchr(bufMime, '/'), "executable")  )
+			{
+				couleur("32");
+			}
+			
+			else if((strstr(strchr(bufMime, '/'), "compressed")) || (strstr(strchr(bufMime, '/'), "archive")) || (strstr(strchr(bufMime, '/'), "zip")))
+				{
+					couleur("31");
+				}
+		}
+		
+		else
+		{
+			//Affichage du nom du fichier
+			switch (st.st_mode & S_IFMT) 
+			{
+				//Couleur bleu pour les repertoires
+				case S_IFDIR: 
+					couleur("34");
+					break;
+
+				//Couleur cyan pour les liens symboliques
+				case S_IFLNK:
+					couleur("36");
+					break;
+
+				//Couleur jaune pour les fichiers FIFO ou blocks
+				case S_IFIFO:
+				case S_IFBLK:
+					couleur("33");
+					break;	
+				
+				//Couleur magenta pour les fichiers audios, images ou sockets
+				case S_IFSOCK:
+					couleur("35");
+					break;
+			}
+		}
+		
+	//Couleur par defaut pour les fichiers ordinaires
+	printf("%s\n", buffer);
+	couleurdefaut();
+}
+
+//Affichage des donnees
+void affiche_donnees2(struct stat st, char buffer[])
+{
+	char chaine[1024];
+	struct passwd *pwd, *pwd2;	
+	struct tm *mtime;
+
+	if((pwd = getpwuid (st.st_uid)) == NULL)
+		syserror("getpwuid error",3);
+
+	if((pwd2 = getpwuid (st.st_gid)) == NULL)
+		syserror("Getpwuid error",3);
+
+	//Affichage des droits
+	affiche_droits2(st,buffer);
+	
+	//Affichage du nombre de liens physique, du nom de l'utilisateur, du groupe, et la taille
+	sprintf(chaine,"%u %s %s\t%lld\t",st.st_nlink,pwd -> pw_name, pwd2 -> pw_name,(long long) st.st_size);
+	printf("%s",chaine);
+
+	//Affichage de la date de la derniere modification du ficher
+	mtime = localtime(&(st.st_mtim.tv_sec));
+	
+	//Affichage de la date
+	affiche_date(mtime);
+	
+	affiche_nom2(st,buffer);
 }
 
 //Parcours le contenu de de la queue
 void parcours_queue(Queue *q, int nb)
 {
 	QueueElt *tmp;
+	struct stat st;
 	char *s;
 	DIR *d;
-
-	printf("%d\n",nb);
 
 	if(q == NULL)
 		return;
@@ -144,36 +289,26 @@ void parcours_queue(Queue *q, int nb)
 	{
 		tmp = dequeue(q);
 		s = (char *) tmp -> elt;
-		
-		printf("%s:\n", s);
-		
-		if(nb > 1)
-			printf("%s:\n", s);
-		
-		if(*s == '/')
+
+		d = opendir(s);
+			
+		//On ouvre le repertoire, erreur si soucis
+		if(d == NULL)
 		{
-			d = opendir(s+1);
-			
-			//On ouvre le repertoire, erreur si soucis
-			if(d == NULL)
-				syserror("Directory problem",1);
+			if(stat(s,&st) != ERR)
+			{	
+				affiche_donnees2(st,s);
 				
-			parcours_rep(q,d,s+1);
+				if(!isQueueEmpty(q))
+					printf("\n");
+			}
 		}
-			
+				
 		else
 		{	
-			d = opendir(s);
-			
-			//On ouvre le repertoire, erreur si soucis
-			if(d == NULL)
-				syserror("Directory problem",1);
-				
+			printf("%s:\n", s);
 			parcours_rep(q,d,s);
-		}
-		
-		if(! isQueueEmpty(q))
-			printf("\n");	
+		}	
 	}	
 }
 
@@ -205,8 +340,11 @@ void parcours_rep(Queue *q, DIR *d, char * chaine)
 		if(stat(buffer,&st) == ERR)
 			syserror("Stat error",2);
 			
-		affiche_donnees(q, st, buffer, elt);
+		affiche_donnees(q, st, buffer, elt);	
 	}
+	
+	if(!isQueueEmpty(q))
+		printf("\n");
 }
 
 //Affichage des droits
@@ -479,22 +617,7 @@ int main (int argc, char *argv[])
 			{
 				//si oui
 				//On regarde les flags
-					//si -a et -R
-						//Pour -R , variable temp pour le repertoire ou on se situe
-						//affichage complet : commencant par des . et des contenus des repertoire et les données fichiers
-					//si -a
-						//On affiche
-					//si -R
-						//Pour -R , variable temp pour le repertoire ou on se situe	
-						//affichage des fichiers, et du contenu des repertoires si ils sont repertoires
 				parcours_queue(nosreps,nbArgvRed);
-			}
-			
-			else
-			{
-				//sinon
-				//erreur
-				printf("Error\n");
 			}
 		}
 		
