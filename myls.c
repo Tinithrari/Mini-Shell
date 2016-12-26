@@ -123,7 +123,6 @@ int verif_fichiers(int nbParam, char * chaine[])
 			if(stat(chaine[i],&st) == -1)
 			{	
 				printf("ls: impossible d'accéder à '%s': Aucun fichier ou dossier de ce type\n",chaine[i]);
-				//return 1;	
 			}	
 		}
 		closedir(d);
