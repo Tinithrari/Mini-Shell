@@ -126,6 +126,7 @@ int verif_fichiers(int nbParam, char * chaine[])
 				//return 1;	
 			}	
 		}
+		closedir(d);
 	}	
 	
 	return 0;
@@ -308,7 +309,8 @@ void parcours_queue(Queue *q, int nb)
 		{	
 			printf("%s:\n", s);
 			parcours_rep(q,d,s);
-		}	
+		}
+		closedir(d);	
 	}	
 }
 
