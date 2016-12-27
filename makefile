@@ -1,13 +1,14 @@
-interpretor:
-	gcc -c argTable.c
-	gcc -c shell.c
-	gcc argTable.o shell.o -o shell
-
-interpretor-dbg:
-	gcc -g -c argTable.c
-	gcc -g -c shell.c
-	gcc -g argTable.o shell.o -o shell
-
+mysh:
+	yacc -d synthax.y
+	lex lexical.lex
+	make job
+	make sequence
+	gcc -c lex.yy.c
+	gcc -c y.tab.c
+	gcc -o mysh Commande.o Sequence.o Redirection.o y.tab.o lex.yy.o Job.o ArrayList.o
+clean-mysh:
+	rm *.o
+	rm mysh
 myls-dbg:
 	gcc -g -c Queue.c
 	gcc -g -c myls.c
@@ -19,7 +20,7 @@ make myls:
 	gcc -o myls myls.o Queue.o
 
 job:
-	gcc -c Job.c JobCommand.c
+	gcc -c Job.c JobCommand.c struct/ArrayList.c
 
 commande:
 	gcc -c Commande.c
