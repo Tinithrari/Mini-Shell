@@ -7,9 +7,13 @@
 #include <sys/wait.h>
 
 #include "struct/ArrayList.h"
+#include "struct/LinkedList.h"
+#include "struct/Hashmap.h"
 #include "Commande.h"
 #include "Redirection.h"
 #include "Job.h"
+#include "cd.h"
+#include "VariableLocale.h"
 
 #define IN_DEFAULT 0
 #define OUT_DEFAULT 1
@@ -138,6 +142,54 @@ int executeCommande(Commande *c)
         errno = EINVAL;
         return 0;
     }
+
+    if (! strcmp(c->commande, "cd"))
+    {
+	    if (c->nOptions != 2)
+	    {
+		    lastReturn = 1;
+		    return 0;
+	    }
+	    else
+		    lastReturn = cd(c->options[1]);
+	    lastPid = getpid();
+	    return 1;
+    }
+    else if (! strcmp(c->commande, "set"))
+    {
+	    if (c->nOptions != 2)
+		    lastReturn = 1;
+	    else
+	    {
+		   char tmpid[1024], tmpvalue[1024];
+		   char *id, *value;
+		   int i, j;
+
+		   for (i = 0; i < strlen(c->options[1]) && c->options[1][i] != '='; i++)
+			   tmpid[i] = c->options[1][i];
+
+		   if (c->options[1][i] != '=' || i == strlen(c->options[1]))
+			   return 0;
+
+		   tmpid[i] = '\0';
+
+		   for (i = i + 1, j = 0; i < strlen(c->options[1]); i++, j++)
+			   tmpvalue[j] = c->options[1][i];
+
+		   tmpvalue[j] = '\0';
+
+		   id = (char*) malloc(sizeof(char) * (strlen(tmpid) + 1));
+		   value = (char*) malloc(sizeof(char) * (strlen(tmpvalue) + 1));
+
+		   strcpy(id, tmpid);
+		   strcpy(value, tmpvalue);
+
+		   setVariableLocale(&id, &value);
+
+		   return 1;
+	    }
+    }
+    
 
     // Essaye de faire un fork, en cas d'erreur, retourne 0
     if ( (pid = fork()) == ERROR)

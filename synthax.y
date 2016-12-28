@@ -8,6 +8,9 @@
 	#include "Job.h"
 	#include "Sequence.h"
 	#include "Redirection.h"
+	#include "struct/LinkedList.h"
+	#include "struct/Hashmap.h"
+	#include "VariableLocale.h"
 
 	#define CWD_SIZE 1024
 	#define USERNAME_SIZE 1024
@@ -38,9 +41,9 @@
 		{
 			cwd[0] = '~';
 			for (i = 0; i < strlen(tmpCwd) - strlen(buffer) + 1; i++)
-				cwd[i + 1] = tmpCwd[strlen(buffer) + i]; 
-		}
-		cwd[i] = '\0';
+				cwd[i + 1] = tmpCwd[strlen(buffer) + i];
+			cwd[i] = '\0'; 
+		}	
 
 		printf("\x1B[32m%s@%s\x1B[0m:\x1B[34m%s\x1B[0m>", getenv("LOGNAME"), hostname, cwd);
 		fflush(stdout);
@@ -56,6 +59,7 @@
 %token <command> commande
 %token <string> option
 %token <string> fichier
+%token <string> variable
 %token <logic> sequence
 %token <flux> flow
 %start debut
@@ -75,6 +79,11 @@ line : Command '\n' {
 Command:
 	Command sequence Command {
 		linkSequence($1, $3, $2);
+		$$ = $1;
+	}
+	| Command variable {
+		char* arg = $2 + 1;
+		addOptionCommande( $1->c, getValeurVariableLocale( &arg ) );
 		$$ = $1;
 	}
 	| Command '&' {

@@ -24,13 +24,20 @@
 %}
 NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;><(2>)(2>&1)(2>>)]
 SPECIAL    [ \t\$\*\?\n\\\[\]\^\&\|;]
+VARIABLE    \$([a-zA-Z]|-|_)([0-9a-zA-Z]|-|_)*
 SIMPLEQUOTED     '(\\'|[^'])+'
 DOUBLEQUOTED    \"(\\\"|[^\"])*\"
 STRING    ((\\{SPECIAL}|{NORMAL})|{SIMPLEQUOTED}|{DOUBLEQUOTED})+
 SEQUENCE    (\|\||\&\&|;)
 FLUX    (\||>|>>|<|2>|2>>|2>\&1)
-BACKGROUND_MARK \&
+BACKGROUND_MARK    \&
 %%
+{VARIABLE} {
+	yylval.string = yytext;
+	return variable;
+}
+{BACKGROUND_MARK} {return yytext[0];}
+
 {STRING}   {
 	if (first)
 	{
@@ -82,7 +89,6 @@ BACKGROUND_MARK \&
 	}
 	return flow;
 }
-{BACKGROUND_MARK} return yytext[0];	
 [ \t]    ;
 \n	return yytext[0];
 
