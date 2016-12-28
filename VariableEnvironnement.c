@@ -151,8 +151,6 @@ int main(void)
 			printf("Ajout %d : %d\n\n",i,inserer(shared_char,tab[i]));
 		}
 		
-		getchar();
-		
 		printf("%d : <%s>\n",i, shared_char);
 		printf("%d : <%s>\n",i, shared_char+32);
 		printf("%d : <%s>\n",i, shared_char+64);
