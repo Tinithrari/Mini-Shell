@@ -7,6 +7,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+#include "VariableEnvironnement.h"
+
 #define TAILLE 1024
 #define ERR -1 
 
