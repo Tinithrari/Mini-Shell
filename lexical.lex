@@ -5,20 +5,31 @@
 	#include "Commande.h"
 	#include "Job.h"
 	#include "Sequence.h"
+	#include "Redirection.h"
 	#include "y.tab.h"
 
 	#define and "&&"
 	#define or "||"
 	#define none ";"
 
+	#define out ">"
+	#define appout ">>"
+	#define in "<"
+	#define err "2>"
+	#define apperr "2>>"
+	#define errout "2>&1"
+
 	extern int first;
+	int flux = 0;
 %}
-NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;]
+NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;><(2>)(2>&1)(2>>)]
 SPECIAL    [ \t\$\*\?\n\\\[\]\^\&\|;]
 SIMPLEQUOTED     '(\\'|[^'])+'
 DOUBLEQUOTED    \"(\\\"|[^\"])*\"
 STRING    ((\\{SPECIAL}|{NORMAL})|{SIMPLEQUOTED}|{DOUBLEQUOTED})+
 SEQUENCE    (\|\||\&\&|;)
+FLUX    (\||>|>>|<|2>|2>>|2>\&1)
+BACKGROUND_MARK \&
 %%
 {STRING}   {
 	if (first)
@@ -31,6 +42,11 @@ SEQUENCE    (\|\||\&\&|;)
 	else
 	{
 		yylval.string = yytext;
+		if (flux)
+		{
+			flux = 0;
+			return fichier;
+		} 
 		return option;
 	}
 }
@@ -43,7 +59,30 @@ SEQUENCE    (\|\||\&\&|;)
 		yylval.logic = NONE;
 	first = 1;
 	return sequence;
-}	
+}
+{FLUX} {
+	flux = 1;
+	if (! strcmp(yytext, in))
+		yylval.flux = IN;
+	else if (! strcmp(yytext, out))
+		yylval.flux = OUT;
+	else if (! strcmp(yytext, err))
+		yylval.flux = ERR;
+	else if (! strcmp(yytext, errout))
+		yylval.flux = ERROUT;
+	else if (! strcmp(yytext, appout))
+		yylval.flux = APPOUT;
+	else if (! strcmp(yytext, errout))
+		yylval.flux = APPERR;
+	else
+	{
+		yylval.flux = PIPE;
+		flux = 0;
+		first = 1;
+	}
+	return flow;
+}
+{BACKGROUND_MARK} return yytext[0];	
 [ \t]    ;
 \n	return yytext[0];
 

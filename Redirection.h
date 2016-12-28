@@ -4,6 +4,26 @@
  * \see Commande.h
  ***********************************************/
 
+/********************************************//**
+ * \brief enum for flow
+ ***********************************************/
+enum flow
+{
+	IN,/**< Flux en entrée */
+	OUT, /**< Flux en sortie */
+	ERR, /**< Flux en erreur */
+	ERROUT, /**< Flux mixé en sortie-erreur */
+	APPOUT, /**< Flux append en sortie */
+	APPERR, /**< Flux append en erreur */
+	PIPE /**< Un tube */
+};
+
+
+ /********************************************//**
+ * \brief Raccourci pour les flux
+ ***********************************************/
+typedef enum flow Flow;
+
  /********************************************//**
  * \brief Tubes de communication
  ***********************************************/
