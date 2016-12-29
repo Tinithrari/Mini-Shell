@@ -52,6 +52,18 @@ int linkSequence(Sequence *s1, Sequence *s2, Logique op)
     return 1;
 }
 
+void setSequenceBackground(Sequence *s)
+{
+	Sequence *ptr;
+	
+	// Vérifie l'argument
+	if (s == NULL)
+		return;
+
+	for (ptr = s; ptr != NULL; ptr = ptr->suivant)
+		ptr->c->background = 1;
+}
+
 int executeSequence(Sequence *s)
 {
     Sequence *ptr;
@@ -89,7 +101,6 @@ static void deleteLinkedMember(Sequence *s)
         return;
 
     deleteLinkedMember(s->suivant);
-    deleteCommande(s->c);
     free(s);
 }
 

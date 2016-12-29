@@ -57,6 +57,13 @@ Sequence* newSequence (Commande *c);
 int linkSequence(Sequence *s1, Sequence *s2, Logique op);
 
 /********************************************//**
+ * \brief Passe une séquence complète en arrière-plan
+ *
+ * \param s La séquence à passer en arrière-plan
+ ***********************************************/
+void setSequenceBackground(Sequence *s);
+
+/********************************************//**
  * \brief Exécute une séquence
  *
  * \param s La séquence à exécuter

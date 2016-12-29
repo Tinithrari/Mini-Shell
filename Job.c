@@ -19,3 +19,8 @@ void initJob(Job *j, pid_t pid, EtatProcessus etat, Commande *commande)
     j->etat = etat;
     j->commande = commande;
 }
+
+void resetCounter(void)
+{
+	numJob = 1;
+}

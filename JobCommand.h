@@ -19,6 +19,13 @@ void interruption(int sig);
 void stopJob(int sig);
 
 /********************************************//**
+ * \brief Vérifie le fils mort et passe un message
+ *
+ * \param sig Code du signal (ici, SIGCHLD)
+ ***********************************************/
+void childDead(int sig);
+
+/********************************************//**
  * \brief Affiche les jobs en cours
  ***********************************************/
 void myjobs(void);

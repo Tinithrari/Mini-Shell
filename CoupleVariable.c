@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int cutVariable(char* str, CoupleVariable* c)
 {

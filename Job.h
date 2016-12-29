@@ -38,3 +38,8 @@ typedef struct job Job;
  * \param commande Commande a rattacher au job
  ***********************************************/
 void initJob(Job *j, pid_t pid, EtatProcessus etat, Commande *commande);
+
+/********************************************//**
+ * \brief Reset the job counter
+ ***********************************************/
+void resetCounter(void);

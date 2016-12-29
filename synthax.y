@@ -3,9 +3,11 @@
 	#include <stdio.h>
 	#include <unistd.h>
 	#include <string.h>
+	#include <signal.h>
 
 	#include "Commande.h"
 	#include "Job.h"
+	#include "JobCommand.h"
 	#include "Sequence.h"
 	#include "Redirection.h"
 	#include "struct/LinkedList.h"
@@ -75,6 +77,13 @@ line : Command '\n' {
 		first = 1;
 		prompt();
        }
+	| Command '&' '\n'{
+		setSequenceBackground($1);
+		executeSequence($1);
+		deleteSequence($1);
+		first = 1;
+		prompt();
+	}
 
 Command:
 	Command sequence Command {
@@ -84,10 +93,6 @@ Command:
 	| Command variable {
 		char* arg = $2 + 1;
 		addOptionCommande( $1->c, getValeurVariableLocale( &arg ) );
-		$$ = $1;
-	}
-	| Command '&' {
-		$1->c->background = 1;
 		$$ = $1;
 	}
 	| Command flow Command {
@@ -132,6 +137,9 @@ Command:
 
 int main (void) 
 {
+	signal(SIGINT, interruption);
+	signal(SIGTSTP, stopJob);
+	signal(SIGCHLD, childDead);
 	prompt();
 	yyparse();
 }

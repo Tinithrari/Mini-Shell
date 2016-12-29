@@ -68,9 +68,11 @@
 	#include <stdio.h>
 	#include <unistd.h>
 	#include <string.h>
+	#include <signal.h>
 
 	#include "Commande.h"
 	#include "Job.h"
+	#include "JobCommand.h"
 	#include "Sequence.h"
 	#include "Redirection.h"
 	#include "struct/LinkedList.h"
@@ -114,7 +116,7 @@
 		fflush(stdout);
 	}
 
-#line 118 "y.tab.c" /* yacc.c:339  */
+#line 120 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -170,14 +172,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 52 "synthax.y" /* yacc.c:355  */
+#line 54 "synthax.y" /* yacc.c:355  */
 
 	Sequence* command;
 	char* string;
 	Logique logic;
 	Flow flux;
 
-#line 181 "y.tab.c" /* yacc.c:355  */
+#line 183 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -194,7 +196,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 198 "y.tab.c" /* yacc.c:358  */
+#line 200 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -445,7 +447,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  11
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  16
+#define YYNSTATES  17
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -492,8 +494,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    68,    68,    69,    72,    80,    84,    89,    93,    98,
-     123,   127
+       0,    70,    70,    71,    74,    80,    89,    93,    98,   103,
+     128,   132
 };
 #endif
 
@@ -533,7 +535,7 @@ static const yytype_uint16 yytoknum[] =
 static const yytype_int8 yypact[] =
 {
       -2,    -5,     8,    -2,    -4,    -5,    -5,    -5,    -5,    -2,
-       9,    -5,    -5,     3,    -5,     3
+       9,    -5,     4,     3,    -5,     3,    -5
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -541,8 +543,8 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,    11,     0,     3,     0,     1,     2,    10,     6,     0,
-       0,     4,     7,     5,     9,     8
+       0,    11,     0,     3,     0,     1,     2,    10,     7,     0,
+       0,     4,     0,     6,     9,     8,     5
 };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -563,13 +565,13 @@ static const yytype_int8 yydefgoto[] =
 static const yytype_uint8 yytable[] =
 {
        7,     1,     8,     9,    10,    11,    12,     7,     5,     8,
-       9,    10,     1,    12,    14,    13,    15,     6
+       9,    10,     1,    16,    14,    13,    15,     6
 };
 
 static const yytype_uint8 yycheck[] =
 {
        4,     3,     6,     7,     8,     9,    10,     4,     0,     6,
-       7,     8,     3,    10,     5,     9,    10,     3
+       7,     8,     3,     9,     5,     9,    10,     3
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -577,20 +579,20 @@ static const yytype_uint8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     3,    12,    13,    14,     0,    12,     4,     6,     7,
-       8,     9,    10,    14,     5,    14
+       8,     9,    10,    14,     5,    14,     9
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    11,    12,    12,    13,    14,    14,    14,    14,    14,
+       0,    11,    12,    12,    13,    13,    14,    14,    14,    14,
       14,    14
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     1,     2,     3,     2,     2,     3,     3,
+       0,     2,     2,     1,     2,     3,     3,     2,     3,     3,
        2,     1
 };
 
@@ -1268,68 +1270,71 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 68 "synthax.y" /* yacc.c:1646  */
+#line 70 "synthax.y" /* yacc.c:1646  */
     {}
-#line 1274 "y.tab.c" /* yacc.c:1646  */
+#line 1276 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 69 "synthax.y" /* yacc.c:1646  */
+#line 71 "synthax.y" /* yacc.c:1646  */
     {}
-#line 1280 "y.tab.c" /* yacc.c:1646  */
+#line 1282 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 72 "synthax.y" /* yacc.c:1646  */
+#line 74 "synthax.y" /* yacc.c:1646  */
     {
 		executeSequence((yyvsp[-1].command));
 		deleteSequence((yyvsp[-1].command));
 		first = 1;
 		prompt();
        }
-#line 1291 "y.tab.c" /* yacc.c:1646  */
+#line 1293 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
 #line 80 "synthax.y" /* yacc.c:1646  */
     {
-		linkSequence((yyvsp[-2].command), (yyvsp[0].command), (yyvsp[-1].logic));
-		(yyval.command) = (yyvsp[-2].command);
+		setSequenceBackground((yyvsp[-2].command));
+		executeSequence((yyvsp[-2].command));
+		deleteSequence((yyvsp[-2].command));
+		first = 1;
+		prompt();
 	}
-#line 1300 "y.tab.c" /* yacc.c:1646  */
+#line 1305 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 84 "synthax.y" /* yacc.c:1646  */
+#line 89 "synthax.y" /* yacc.c:1646  */
+    {
+		linkSequence((yyvsp[-2].command), (yyvsp[0].command), (yyvsp[-1].logic));
+		(yyval.command) = (yyvsp[-2].command);
+	}
+#line 1314 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 7:
+#line 93 "synthax.y" /* yacc.c:1646  */
     {
 		char* arg = (yyvsp[0].string) + 1;
 		addOptionCommande( (yyvsp[-1].command)->c, getValeurVariableLocale( &arg ) );
 		(yyval.command) = (yyvsp[-1].command);
 	}
-#line 1310 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 7:
-#line 89 "synthax.y" /* yacc.c:1646  */
-    {
-		(yyvsp[-1].command)->c->background = 1;
-		(yyval.command) = (yyvsp[-1].command);
-	}
-#line 1319 "y.tab.c" /* yacc.c:1646  */
+#line 1324 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 93 "synthax.y" /* yacc.c:1646  */
+#line 98 "synthax.y" /* yacc.c:1646  */
     {
 		pipeCommande((yyvsp[-2].command)->c, (yyvsp[0].command)->c);
 		linkSequence((yyvsp[-2].command), (yyvsp[0].command), NONE);
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1329 "y.tab.c" /* yacc.c:1646  */
+#line 1334 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 98 "synthax.y" /* yacc.c:1646  */
+#line 103 "synthax.y" /* yacc.c:1646  */
     {
 		switch ((yyvsp[-1].flux))
 		{
@@ -1355,28 +1360,28 @@ yyreduce:
 		}
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1359 "y.tab.c" /* yacc.c:1646  */
+#line 1364 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 123 "synthax.y" /* yacc.c:1646  */
+#line 128 "synthax.y" /* yacc.c:1646  */
     {
 		addOptionCommande((yyvsp[-1].command)->c, (yyvsp[0].string));
 		(yyval.command) = (yyvsp[-1].command);
 	}
-#line 1368 "y.tab.c" /* yacc.c:1646  */
+#line 1373 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 127 "synthax.y" /* yacc.c:1646  */
+#line 132 "synthax.y" /* yacc.c:1646  */
     {
 		(yyval.command) = (yyvsp[0].command);
 	}
-#line 1376 "y.tab.c" /* yacc.c:1646  */
+#line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1380 "y.tab.c" /* yacc.c:1646  */
+#line 1385 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1604,11 +1609,14 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 131 "synthax.y" /* yacc.c:1906  */
+#line 136 "synthax.y" /* yacc.c:1906  */
 
 
 int main (void) 
 {
+	signal(SIGINT, interruption);
+	signal(SIGTSTP, stopJob);
+	signal(SIGCHLD, childDead);
 	prompt();
 	yyparse();
 }

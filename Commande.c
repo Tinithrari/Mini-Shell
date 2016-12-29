@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #include "struct/ArrayList.h"
 #include "struct/LinkedList.h"
@@ -183,6 +184,10 @@ int executeCommande(Commande *c)
     {
         int i;
 
+	signal(SIGINT, SIG_DFL);
+	signal(SIGTSTP, SIG_DFL);
+	signal(SIGCHLD, SIG_DFL);
+
         // Redirige l'entrée si besoin
         if (c->in != IN_DEFAULT)
         {
@@ -235,11 +240,14 @@ int executeCommande(Commande *c)
         Job j;
         initJob(&j, pid, RUNNING, c);
         running = &j;
-        wait(&status);
+        waitpid(-1, &status, WUNTRACED);
         running = NULL;
 
         lastReturn = (WIFEXITED(status) ? WEXITSTATUS(status) : ERROR);
         lastPid = pid;
+
+	if (lastReturn != ERR || WTERMSIG(status) != SIGTSTP)
+		deleteCommande(c);
     }
     else
     {
@@ -247,6 +255,7 @@ int executeCommande(Commande *c)
         // Enregistrement dans la table des jobs
         initJob(&j, pid, RUNNING, c);
         addInArray(jobs, &j);
+	printf("[%d] %d\n", j.noJob, j.pid);
     }
 
     return 1;
