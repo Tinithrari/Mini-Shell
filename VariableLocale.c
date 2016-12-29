@@ -55,7 +55,7 @@ char* getValeurVariableLocale(char **name)
         initHashmap();
     res = (char**)getEltHashmap(variablesLocales, name);
 
-    return res == NULL ? NULL : *res;
+    return res == NULL ? "" : *res;
 }
 
 void cleanVariable(void)
