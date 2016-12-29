@@ -51,11 +51,11 @@ int setVariableLocale(char **name, char **value)
 char* getValeurVariableLocale(char **name)
 {
 	char **res;
-    if (variablesLocales == NULL)
-        initHashmap();
-    res = (char**)getEltHashmap(variablesLocales, name);
-
-    return res == NULL ? "" : *res;
+	if (variablesLocales == NULL)
+		initHashmap();
+	res = (char**)getEltHashmap(variablesLocales, name);
+	
+	return res == NULL ? "" : *res;
 }
 
 void cleanVariable(void)

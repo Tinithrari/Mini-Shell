@@ -5,7 +5,10 @@ mysh:
 	make sequence
 	gcc -c lex.yy.c
 	gcc -c y.tab.c
-	gcc -o mysh Commande.o Sequence.o Redirection.o y.tab.o lex.yy.o Job.o ArrayList.o
+	gcc -c VariableLocale.c
+	gcc -c struct/LinkedList.c struct/Hashmap.c
+	gcc -c cd.c
+	gcc -o mysh Commande.o Sequence.o Redirection.o y.tab.o lex.yy.o Job.o ArrayList.o CoupleVariable.o VariableLocale.o LinkedList.o Hashmap.o cd.o
 clean-mysh:
 	rm *.o
 	rm mysh
@@ -23,10 +26,12 @@ job:
 	gcc -c Job.c JobCommand.c struct/ArrayList.c
 
 commande:
+	gcc -c CoupleVariable.c
 	gcc -c Commande.c
 	gcc -c Redirection.c
 
 commande-dbg:
+	gcc -g -c CoupleVariable.c
 	gcc -g -c Commande.c
 	gcc -g -c Redirection.c
 

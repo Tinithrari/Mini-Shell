@@ -48,30 +48,32 @@ extern int yydebug;
     commande = 258,
     option = 259,
     fichier = 260,
-    sequence = 261,
-    flow = 262
+    variable = 261,
+    sequence = 262,
+    flow = 263
   };
 #endif
 /* Tokens.  */
 #define commande 258
 #define option 259
 #define fichier 260
-#define sequence 261
-#define flow 262
+#define variable 261
+#define sequence 262
+#define flow 263
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 49 "synthax.y" /* yacc.c:1909  */
+#line 52 "synthax.y" /* yacc.c:1909  */
 
 	Sequence* command;
 	char* string;
 	Logique logic;
 	Flow flux;
 
-#line 75 "y.tab.h" /* yacc.c:1909  */
+#line 77 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

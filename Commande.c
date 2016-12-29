@@ -13,6 +13,7 @@
 #include "Redirection.h"
 #include "Job.h"
 #include "cd.h"
+#include "CoupleVariable.h"
 #include "VariableLocale.h"
 
 #define IN_DEFAULT 0
@@ -161,32 +162,14 @@ int executeCommande(Commande *c)
 		    lastReturn = 1;
 	    else
 	    {
-		   char tmpid[1024], tmpvalue[1024];
-		   char *id, *value;
-		   int i, j;
+		    CoupleVariable co;
 
-		   for (i = 0; i < strlen(c->options[1]) && c->options[1][i] != '='; i++)
-			   tmpid[i] = c->options[1][i];
+		    if (! cutVariable(c->options[1], &co))
+			    return 0;
+		    
+		    setVariableLocale(&(co.name), &(co.value));
 
-		   if (c->options[1][i] != '=' || i == strlen(c->options[1]))
-			   return 0;
-
-		   tmpid[i] = '\0';
-
-		   for (i = i + 1, j = 0; i < strlen(c->options[1]); i++, j++)
-			   tmpvalue[j] = c->options[1][i];
-
-		   tmpvalue[j] = '\0';
-
-		   id = (char*) malloc(sizeof(char) * (strlen(tmpid) + 1));
-		   value = (char*) malloc(sizeof(char) * (strlen(tmpvalue) + 1));
-
-		   strcpy(id, tmpid);
-		   strcpy(value, tmpvalue);
-
-		   setVariableLocale(&id, &value);
-
-		   return 1;
+		    return 1;
 	    }
     }
     

@@ -21,7 +21,7 @@ int cutVariable(char* str, CoupleVariable* c)
         return 0;
     }
     // Calcule la logueur du nom et alloue l'espace nécessaire pour la chaine
-    nameLength = (finNom - str);
+    nameLength = (finNom - str) + 1;
     name = (char*) malloc(sizeof(char) * nameLength);
 
     if (name == NULL)
