@@ -26,6 +26,20 @@ void stopJob(int sig);
 void childDead(int sig);
 
 /********************************************//**
+ * \brief Passe un processus stoppé ou en arrière-plan en avant blanc
+ *
+ * \param pid Identifiant du processus ou -1
+ ***********************************************/
+void myfg(pid_t pid);
+
+/********************************************//**
+ * \brief passe un processus stoppé en arrière plan
+ *
+ * \param pid Identifiant du processus ou -1
+ ***********************************************/
+void mybg(pid_t pid);
+
+/********************************************//**
  * \brief Affiche les jobs en cours
  ***********************************************/
 void myjobs(void);

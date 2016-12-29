@@ -17,6 +17,8 @@
 
 extern ArrayList *jobs;
 extern Job *running;
+extern int lastReturn;
+extern pid_t lastPid;
 
 static void cleanShell(void)
 {
@@ -84,9 +86,10 @@ void childDead(int sig)
 			int status, code;
 			waitpid(j.pid, &status, 0);
 
-			code = WIFSIGNALED(status) ? -1 : WEXITSTATUS(status);
+			code = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
 			
 			printf("%s (jobs=[%d], pid=%d) terminée avec status=%d\n", j.commande->commande, j.noJob, j.pid, code);
+			fflush(stdout);
 			deleteCommande(j.commande);
 			removeFromArrayAt(jobs, i);
 		}
@@ -94,6 +97,99 @@ void childDead(int sig)
 
 	if (! jobs->nbElement)
 		resetCounter();
+}
+
+void myfg(pid_t pid)
+{
+	int i, statut;
+	Job j;
+	
+	if (pid == ERR)
+	{
+		int maxNoJob = 0;
+		Job tmp;
+		for (i = 0; i < jobs->nbElement; i++)
+		{
+			tmp = ((Job*)jobs->array)[i];
+			if (tmp.noJob >= maxNoJob)
+			{
+				j = tmp;
+				maxNoJob = tmp.noJob;
+			}
+		}
+	}
+	else if (pid > 0)
+	{
+		int trouve = 0;
+		for (i = 0; i < jobs->nbElement; i++)
+		{
+			j = ((Job*)jobs->array)[i];
+			if (j.pid == pid)
+			{
+				trouve = 1;
+				break;
+			}
+		}
+
+		if (! trouve)
+			return;
+	}
+
+	removeFromArrayAt(jobs, i);
+	
+	if (j.etat == STOPPED)
+		kill(j.pid, SIGCONT);
+
+	running = &j;
+	
+	waitpid(j.pid, &statut, WUNTRACED);
+
+	running = NULL;
+
+        lastReturn = (WIFEXITED(statut) ? WEXITSTATUS(statut) : ERR);
+        lastPid = pid;
+
+	if (lastReturn != ERR || WTERMSIG(statut) != SIGTSTP)
+		deleteCommande(j.commande);
+}
+
+void mybg(pid_t pid)
+{
+	int i;
+	Job j;
+	
+	if (pid == ERR)
+	{
+		int maxNoJob = 0;
+		Job tmp;
+		for (i = 0; i < jobs->nbElement; i++)
+		{
+			tmp = ((Job*)jobs->array)[i];
+			if (tmp.noJob >= maxNoJob)
+			{
+				j = tmp;
+				maxNoJob = tmp.noJob;
+			}
+		}
+	}
+	else if (pid > 0)
+	{
+		int trouve = 0;
+		for (i = 0; i < jobs->nbElement; i++)
+		{
+			j = ((Job*)jobs->array)[i];
+			if (j.pid == pid)
+			{
+				trouve = 1;
+				break;
+			}
+		}
+
+		if (! trouve)
+			return;
+	}
+	if (j.etat == STOPPED)
+		kill(j.pid, SIGCONT);
 }
 
 void myjobs(void)

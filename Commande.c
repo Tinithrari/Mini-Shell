@@ -13,9 +13,11 @@
 #include "Commande.h"
 #include "Redirection.h"
 #include "Job.h"
+#include "JobCommand.h"
 #include "cd.h"
 #include "CoupleVariable.h"
 #include "VariableLocale.h"
+#include "status.h"
 
 #define IN_DEFAULT 0
 #define OUT_DEFAULT 1
@@ -136,7 +138,7 @@ int addOptionCommande(Commande *c, string p)
 int executeCommande(Commande *c)
 {
     pid_t pid;
-    int status;
+    int statut;
 
     // Vérifie si la commande n'est pas nulle
     if (c == NULL)
@@ -173,7 +175,40 @@ int executeCommande(Commande *c)
 		    return 1;
 	    }
     }
-    
+    else if (! strcmp(c->commande, "exit"))
+    {
+	    exitShell();
+    }
+    else if (! strcmp(c->commande, "myjobs"))
+    {
+	    myjobs();
+	    return 1;
+    }
+    else if (! strcmp(c->commande, "status"))
+    {
+	    status();
+	    return 1;
+    }
+    else if (! strcmp(c->commande, "myfg"))
+    {
+	    if (c->nOptions == 1)
+		    myfg(-1);
+	    else if (c->nOptions == 2)
+		    myfg(atoi(c->options[1]));
+	    else
+		    return 0;
+	    return 1;
+    }
+    else if (! strcmp(c->commande, "mybg"))
+    {
+	    if (c->nOptions == 1)
+		    mybg(-1);
+	    else if (c->nOptions == 2)
+		    mybg(atoi(c->options[1]));
+	    else
+		    return 0;
+	    return 1;
+    }
 
     // Essaye de faire un fork, en cas d'erreur, retourne 0
     if ( (pid = fork()) == ERROR)
@@ -240,13 +275,13 @@ int executeCommande(Commande *c)
         Job j;
         initJob(&j, pid, RUNNING, c);
         running = &j;
-        waitpid(-1, &status, WUNTRACED);
+        waitpid(-1, &statut, WUNTRACED);
         running = NULL;
 
-        lastReturn = (WIFEXITED(status) ? WEXITSTATUS(status) : ERROR);
+        lastReturn = (WIFEXITED(statut) ? WEXITSTATUS(statut) : ERROR);
         lastPid = pid;
 
-	if (lastReturn != ERR || WTERMSIG(status) != SIGTSTP)
+	if (lastReturn != ERR || WTERMSIG(statut) != SIGTSTP)
 		deleteCommande(c);
     }
     else

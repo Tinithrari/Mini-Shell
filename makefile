@@ -8,7 +8,8 @@ mysh:
 	gcc -c VariableLocale.c
 	gcc -c struct/LinkedList.c struct/Hashmap.c
 	gcc -c cd.c
-	gcc -o mysh Commande.o Sequence.o Redirection.o y.tab.o lex.yy.o Job.o ArrayList.o CoupleVariable.o VariableLocale.o LinkedList.o Hashmap.o cd.o JobCommand.o
+	gcc -c status.c
+	gcc -o mysh Commande.o Sequence.o Redirection.o y.tab.o lex.yy.o Job.o ArrayList.o CoupleVariable.o VariableLocale.o LinkedList.o Hashmap.o cd.o JobCommand.o status.o
 clean-mysh:
 	rm *.o
 	rm mysh
