@@ -20,6 +20,63 @@ size_t strlen_interv(const char *s, int debut, int fin)
     return i == debut;
 }
 
+//Modifie la valeur associee a une variable
+int modifier(char * destination, char * nomVariable, char * valeurVariable)
+{
+	char * tmp = NULL;
+	int debut, i, j, k, tailleChaine;
+
+	if((nomVariable == NULL) || (valeurVariable == NULL))
+		return ERR;
+		
+	tmp = nomVariable;
+	
+	strcat(tmp,nomVariable);
+	strcat(tmp,"=");
+	
+	//Si le debut vaut ERR, on cree le nom de variable avec la valeur associée
+	if((debut = indice_debut(destination,tmp)) == ERR)
+	{
+		strcat(tmp,valeurVariable);
+		inserer(destination,tmp);
+		return 1;
+	}
+	
+	else
+	{
+		tailleChaine = 0;
+		
+		//On avance jusqu'a arriver sur le caractere '='
+		for(i = debut; *(destination + i) != '='; i++);
+		
+		//On compte les caracteres jusqu'a '\0' exclu	
+		for(j = ++i; *(destination + j) != '\0'; j++);
+		j--;
+		
+		for(k = 0; *(valeurVariable + k) != '\0'; k++)
+		{
+			*(destination + i) = *(valeurVariable + k);
+			i++;
+		}
+		*(destination + i) = '\0';
+		i++;
+		 
+		if(j < i)
+			return 1;
+			
+		else
+		{
+			//Mettre des NULLS pour la suite pour ecraser les restes de l'ancienne chaine
+			for(;i <= j; i++)
+				*(destination + i) = NULL;
+			
+			return 1
+		}
+		
+		//TODO : verification si on empiette pas sur une autre chaine
+	}
+}
+
 //Inserer une chaine de caracteres dans une autre chaine de caracteres sans ecraser de contenu
 int inserer(char * destination, const char * chaine)
 {
