@@ -22,6 +22,34 @@ int shmcreer;
 static int shmid;
 static char * destination;
 
+//Affiche l'ensemble des variables d'environnements
+void affiche_variables_environnement(void)
+{
+	int i, longueur;
+
+	if(destination == NULL)
+		return;
+	
+	for(i = 0; i < TAILLE;)
+	{	
+		if(destination[i] != '\0')
+		{
+			char buffer[TAILLE];
+			
+			sprintf(buffer,"%s",destination[i]);
+			longueur = strlen(buffer) + 1;
+			
+			printf("%s\n",buffer);
+			
+			i += longueur;
+			continue;
+		}
+		
+		i++;
+	}
+}
+
+//Affiche la valeur associee a une chaine
 char * getValeur(char * chaine)
 {
 	int debut, longueur;
@@ -53,6 +81,7 @@ char * getValeur(char * chaine)
 	}
 }
 
+//Initialise la memoire partagee
 void init_shm(void)
 {
 	key_t k;
@@ -73,11 +102,13 @@ void init_shm(void)
 		perror("Shmat Error"), exit(1);	
 }
 
+//Detache un segment de la memoire partagee
 void detache_memoire(void)
 {
 	shmdt(destination);
 }
 
+//Supprime la memoire partagee
 void delete_shm(void)
 {
 	shmdt(destination);

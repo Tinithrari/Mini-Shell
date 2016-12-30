@@ -1,9 +1,16 @@
+//Affiche l'ensemble des variables d'environnements
+void affiche_variables_environnement(void);
+
+//Affiche la valeur associee a une chaine
 char * getValeur(char * chaine);
 
+//Initialise la memoire partagee
 void init_shm(void);
 
+//Supprime la memoire partagee
 void delete_shm(void);
 
+//Detache un segment de la memoire partagee
 void detache_memoire(void);
 
 //Determine si il y a des caracteres autre que '\0' sur un intervalle donné
