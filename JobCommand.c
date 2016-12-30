@@ -12,8 +12,10 @@
 #include "Job.h"
 #include "JobCommand.h"
 #include "VariableLocale.h"
+#include "VariableEnvironnement.h"
 
 #define ERR -1
+
 
 extern ArrayList *jobs;
 extern Job *running;
@@ -30,7 +32,7 @@ static void cleanShell(void)
 
     // Supprime le tableau de Job
     deleteArray(jobs);
-
+	delete_shm();
     cleanVariable();
 
     // Libère l'environnement des commandes

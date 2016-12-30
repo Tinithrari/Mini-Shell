@@ -13,6 +13,7 @@
 	#include "struct/LinkedList.h"
 	#include "struct/Hashmap.h"
 	#include "VariableLocale.h"
+	#include "VariableEnvironnement.h"
 
 	#define CWD_SIZE 1024
 	#define USERNAME_SIZE 1024
@@ -137,6 +138,7 @@ Command:
 
 int main (void) 
 {
+	init_shm();
 	signal(SIGINT, interruption);
 	signal(SIGTSTP, stopJob);
 	signal(SIGCHLD, childDead);

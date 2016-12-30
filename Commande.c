@@ -17,6 +17,7 @@
 #include "cd.h"
 #include "CoupleVariable.h"
 #include "VariableLocale.h"
+#include "VariableEnvironnement.h"
 #include "status.h"
 
 #define IN_DEFAULT 0
@@ -259,6 +260,39 @@ int executeCommande(Commande *c)
 	    lastPid = getpid();
 	    return 1;
     }
+	else if (! strcmp(c->commande, "setenv"))
+    {
+    	if (c->nOptions == 2)
+	    {
+		    CoupleVariable co;
+
+		    if (! cutVariable(c->options[1], &co))
+			    return 0;
+		    
+		    lastReturn = ! modifier((co.name), (co.value));
+		    lastPid = getpid();
+
+		    return 1;
+	    }
+	    
+	    lastReturn = 0;
+		lastPid = getpid();
+		return 0;		
+    }
+    else if (! strcmp(c->commande, "unsetenv"))
+    {
+    	if (c->nOptions == 2)
+    	{
+    		lastReturn = !supp_chaine (c->options[1]);
+    		lastPid = getpid();
+    		return 1;
+		}
+		
+		lastReturn = 0;
+		lastPid = getpid();
+		return 0;
+		
+    }
 
     // Essaye de faire un fork, en cas d'erreur, retourne 0
     if ( (pid = fork()) == ERROR)
@@ -268,7 +302,8 @@ int executeCommande(Commande *c)
     if (! pid)
     {
         int i;
-
+        
+		detache_memoire();
 	signal(SIGINT, SIG_DFL);
 	signal(SIGTSTP, SIG_DFL);
 	signal(SIGCHLD, SIG_DFL);

@@ -6,25 +6,90 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/wait.h>
 
 #include "VariableEnvironnement.h"
 
-#define TAILLE 1024
+#define TAILLE 1024 
 #define ERR -1 
+#define SEP '\a'
+
+int shmcreer;
+
+static int shmid;
+static char * destination;
+
+char * getValeur(char * chaine)
+{
+	int debut, longueur;
+	
+	if(chaine == NULL)
+		return "";
+		
+	longueur = strlen(chaine) + 1;
+
+	{
+		char buffer[longueur + 1];
+	
+		strcpy(buffer,chaine);
+		strcat(buffer,"\a");
+	
+		debut = indice_debut(chaine);
+
+		if(debut == ERR)
+			return "";
+			
+		else
+		{
+			int i;
+			
+			for(i = debut; destination[i] != SEP; i++);
+			
+			return destination + (i + 1);
+		}
+	}
+}
+
+void init_shm(void)
+{
+	shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600 | IPC_CREAT | IPC_EXCL); 
+	shmcreer = (shmid != ERR);
+	
+	if(shmid == ERR)
+		shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600); 
+	
+	destination = (char *)shmat(shmid,0,0);
+	
+	if((void *)destination == (void *)ERR)
+		perror("Shmat Error"), exit(1);	
+}
+
+void detache_memoire(void)
+{
+	shmdt(destination);
+}
+
+void delete_shm(void)
+{
+	shmdt(destination);
+	if(shmcreer)
+		shmctl(shmid,IPC_RMID,0);
+	
+}
 
 //Determine si il y a des caracteres autre que '\0' sur un intervalle donné
-int strlen_interv(const char *s, int debut, int fin)
+int strlen_interv(int debut, int fin)
 {
     int i;
     
     for (i = debut; i <= fin; i++)
-         if (s[i] != '\0')
+         if (destination[i] != '\0')
                  return 0;	      
     return 1;
 }
 
 //Modifie la valeur associee a une variable
-int modifier(char * destination, char * nomVariable, char * valeurVariable)
+int modifier(char * nomVariable, char * valeurVariable)
 {
 	char buffer[128];
 	int debut, i, j, k, tailleChaine;
@@ -36,14 +101,14 @@ int modifier(char * destination, char * nomVariable, char * valeurVariable)
 		return ERR;
 	
 	strcpy(buffer,nomVariable);
-	strcat(buffer, "=");
+	strcat(buffer, "\a");
 	
 	
 	//Si le debut vaut ERR, on cree le nom de variable avec la valeur associée
-	if((debut = indice_debut(destination,buffer)) == ERR)
+	if((debut = indice_debut(buffer)) == ERR)
 	{
 		strcat(buffer,valeurVariable);
-		inserer(destination,buffer);
+		inserer(buffer);
 		return 1;
 	}
 	
@@ -57,7 +122,7 @@ int modifier(char * destination, char * nomVariable, char * valeurVariable)
 		
 		if(tailleChaine > tailleMeme)
 		{
-			int echoue = inserer(destination,buffer);
+			int echoue = inserer(buffer);
 		
 			if(!echoue)
 				for(j = 0; *(destination + j); j++)
@@ -66,7 +131,7 @@ int modifier(char * destination, char * nomVariable, char * valeurVariable)
 			return echoue;
 		}
 		
-		for(i = debut; *(destination + i)!= '=';i++);
+		for(i = debut; *(destination + i)!= SEP;i++);
 		i++;
 		
 		tailleVarMem = strlen(destination + i);
@@ -87,9 +152,9 @@ int modifier(char * destination, char * nomVariable, char * valeurVariable)
 }
 
 //Inserer une chaine de caracteres dans une autre chaine de caracteres sans ecraser de contenu
-int inserer(char * destination, const char * chaine)
+int inserer(char * chaine)
 {
-	int tailleDest = 1, i, j ,k;
+	int tailleDest = 1, i, j ,k, b;
 
 	if(chaine == NULL)
 		return 1;
@@ -99,36 +164,35 @@ int inserer(char * destination, const char * chaine)
 	
 	for(tailleDest = 1; tailleDest <= strlen(chaine); tailleDest = tailleDest << 1);
 	
-	printf("taille dest : %d , strlen chaine : %d\n", tailleDest, strlen(chaine));
-	
-	printf("#%d#%d#\n",TAILLE - tailleDest ,TAILLE - tailleDest - 1);
-	
 	for(i = 0; i < (TAILLE - tailleDest - 1) ; i+=tailleDest)
-	{
-		printf("<<%d>>\n",strlen_interv(destination,i,(i + tailleDest - 1)));
-		
-		if((strlen_interv(destination,i,(i + tailleDest + 1)) == 0) ||  ((i>0) && destination[i-1] != '\0'))
+	{		
+		if((strlen_interv(i,(i + tailleDest + 1)) == 0) ||  ((i>0) && destination[i-1] != '\0'))
 			continue;
 			
-		
 		else
 		{
+			b = 0;
+		
 			for(j = i, k = 0; (chaine[k] != '\0'); j++, k++)
-				destination[j] = chaine[k];
-			printf("$%d$\n",j);
+			{	
+				if(!b && (chaine[k] == '='))
+				{
+					destination[j] = SEP;
+					b = 1;
+				}
+				
+				else
+					destination[j] = chaine[k];
+			}
 			destination[j] = '\0';
 			return 0;
 		}
 	}
-	
-	printf("&& %d && %d &&", (TAILLE - tailleDest - 1), i);
-	
-	printf("%s : Ajout impossible\n", chaine);
 	return 1;
 }
 
 //Teste si chaine est dans destination ou non
-int estPresente (char * destination, const char * chaine)
+int estPresente ( char * chaine)
 {
 	int i;
 
@@ -146,14 +210,14 @@ int estPresente (char * destination, const char * chaine)
 }
 
 //Retourne l'indice ou commence la chaine
-int indice_debut (const char * destination, char * chaine)
+int indice_debut (char * chaine)
 {
 	int i, j, k, tmp;
 	
 	if(chaine == NULL)
 		return ERR;
 
-	if(estPresente(destination, chaine) == 0)
+	if(estPresente(chaine) == 0)
 		return ERR;
 
 	for (i = 0; i < TAILLE; )
@@ -167,87 +231,33 @@ int indice_debut (const char * destination, char * chaine)
 }
 
 //Supprime la chaine de destination
-int supp_chaine (char * destination, const char * chaine)
+int supp_chaine (char * chaine)
 {
-	int i, j, debut;
+	int i, j, debut, longueur;
+	
+	
 
 	if(chaine == NULL)
 		return 0;
+	
+	longueur = strlen(chaine) + 1;
+	
+	{
+		char buffer[longueur + 1];
+		int index, i;
+		
+		strcpy(buffer,chaine);
+		strcat(buffer,"\a");
+		
+		index = indice_debut(buffer);
+	
 
-	if(estPresente(destination, chaine) == 0)
-		return 0;
+		if(index == ERR)
+			return 0;
 		
-	else
-	{
-		for (i = 0; i < TAILLE; )
-		{
-    		if (strstr(destination + i, chaine) == NULL)
-       			i += strlen(destination + i) + 1;
-    		
-    		else
-        	{
-        		debut = indice_debut(destination,chaine);
-        		if(debut == ERR)
-        			return 0;
-        			
-        		else
-        		{
-        			for(j = debut; j <= (debut + strlen(chaine)); j++)
-        				*(destination + j) = '\0';
-        			
-        			return 1;
-        		}	
-        	}
-		}
-	return 0;
+		for(i = index; destination[i]; i++)
+			destination[i] = '\0';
+		
+		return 1;
 	}
-}
-
-int main(void)
-{	
-	int shmid, i;
-	char * shared_char;
-	char tab[5][70] = {"Je m'appelle jacky=el matador","petit lapin rose","je suis amoureux","il y a des jours ou franchement je ferais mieux de rester coucher","MDR"}; 
-	
-	shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600);
-	shared_char = (char *)shmat(shmid,0,0);
-	
-	if(fork() == 0)
-	{
-		for(i = 0; i < 5; i++)
-		{
-			printf("Ajout %d : %d\n\n",i,inserer(shared_char,tab[i]));
-		}
-		
-		printf("%d : <%s>\n",i, shared_char);
-		printf("%d : <%s>\n",i, shared_char+32);
-		printf("%d : <%s>\n",i, shared_char+64);
-		printf("%d : <%s>\n",i, shared_char+96);
-		printf("%d : <%s>\n",i, shared_char+128);
-		printf("%d : <%s>\n",i, shared_char+52);
-		
-		printf("<%d>\n",modifier(shared_char,"Je m'appelle jacky","uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"));
-		printf("%d : <%s>\n",i, shared_char);
-		
-		
-		printf("%d : <%s>\n",i, shared_char);
-		printf("%d : <%s>\n",i, shared_char+32);
-		printf("%d : <%s>\n",i, shared_char+64);
-		printf("%d : <%s>\n",i, shared_char+96);
-		printf("%d : <%s>\n",i, shared_char+128);
-		printf("%d : <%s>\n",i, shared_char+52);
-		printf("%d : <%s>\n",i, shared_char+256);
-		shmdt((char *)shared_char);
-	
-	}
-	
-	else
-	{
-		wait(NULL);
-		shmdt((char *)shared_char);
-		shmctl(shmid,IPC_RMID,0);
-	}
-	
-	
-	return 0;
 }
