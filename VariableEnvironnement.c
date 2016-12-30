@@ -26,57 +26,63 @@ int strlen_interv(const char *s, int debut, int fin)
 //Modifie la valeur associee a une variable
 int modifier(char * destination, char * nomVariable, char * valeurVariable)
 {
-	char * tmp = NULL;
+	char buffer[128];
 	int debut, i, j, k, tailleChaine;
 
 	if((nomVariable == NULL) || (valeurVariable == NULL))
 		return ERR;
 		
-	tmp = nomVariable;
+	if((strlen(nomVariable) + strlen(valeurVariable) + 1) >= 128)
+		return ERR;
 	
-	strcat(tmp,nomVariable);
-	strcat(tmp,"=");
+	strcpy(buffer,nomVariable);
+	strcat(buffer, "=");
+	
 	
 	//Si le debut vaut ERR, on cree le nom de variable avec la valeur associée
-	if((debut = indice_debut(destination,tmp)) == ERR)
+	if((debut = indice_debut(destination,buffer)) == ERR)
 	{
-		strcat(tmp,valeurVariable);
-		inserer(destination,tmp);
+		strcat(buffer,valeurVariable);
+		inserer(destination,buffer);
 		return 1;
 	}
 	
 	else
 	{
-		tailleChaine = 0;
+		int tailleMeme,tailleVarMem;
 		
-		//On avance jusqu'a arriver sur le caractere '='
-		for(i = debut; *(destination + i) != '='; i++);
+		strcat(buffer,valeurVariable);
+		tailleChaine = strlen(buffer);
+		tailleMeme = strlen(destination + debut);
 		
-		//On compte les caracteres jusqu'a '\0' exclu	
-		for(j = ++i; *(destination + j) != '\0'; j++);
-		j--;
+		if(tailleChaine > tailleMeme)
+		{
+			int echoue = inserer(destination,buffer);
+		
+			if(!echoue)
+				for(j = 0; *(destination + j); j++)
+					*(destination + j) = '\0';
+				
+			return echoue;
+		}
+		
+		for(i = debut; *(destination + i)!= '=';i++);
+		i++;
+		
+		tailleVarMem = strlen(destination + i);
 		
 		for(k = 0; *(valeurVariable + k) != '\0'; k++)
 		{
-			*(destination + i) = *(valeurVariable + k);
-			i++;
-		}
-		*(destination + i) = '\0';
-		i++;
-		 
-		if(j < i)
-			return 1;
+			*(destination + i + k) = *(valeurVariable + k);
 			
-		else
-		{
-			//Mettre des NULLS pour la suite pour ecraser les restes de l'ancienne chaine
-			for(;i <= j; i++)
-				*(destination + i) = NULL;
-			
-			return 1
 		}
 		
-		//TODO : verification si on empiette pas sur une autre chaine
+		*(destination + i + k) = '\0';
+		
+		for(;k < tailleVarMem; k++)
+			*(destination + i + k) = '\0';
+		
+		return 0;	 
 	}
 }
 
@@ -101,7 +107,7 @@ int inserer(char * destination, const char * chaine)
 	{
 		printf("<<%d>>\n",strlen_interv(destination,i,(i + tailleDest - 1)));
 		
-		if(strlen_interv(destination,i,(i + tailleDest - 1)) == 0)
+		if((strlen_interv(destination,i,(i + tailleDest + 1)) == 0) ||  ((i>0) && destination[i-1] != '\0'))
 			continue;
 			
 		
@@ -201,7 +207,7 @@ int main(void)
 {	
 	int shmid, i;
 	char * shared_char;
-	char tab[5][70] = {"Je m'appelle jacky","petit lapin rose","je suis amoureux","il y a des jours ou franchement je ferais mieux de rester coucher","MDR"}; 
+	char tab[5][70] = {"Je m'appelle jacky=el matador","petit lapin rose","je suis amoureux","il y a des jours ou franchement je ferais mieux de rester coucher","MDR"}; 
 	
 	shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600);
 	shared_char = (char *)shmat(shmid,0,0);
@@ -218,27 +224,19 @@ int main(void)
 		printf("%d : <%s>\n",i, shared_char+64);
 		printf("%d : <%s>\n",i, shared_char+96);
 		printf("%d : <%s>\n",i, shared_char+128);
-		printf("%d : <%s>\n",i, shared_char+20);
+		printf("%d : <%s>\n",i, shared_char+52);
 		
-		printf("%d\n",estPresente(shared_char,tab[4]));
-		printf("%d\n",estPresente(shared_char,"T'aimes le swag"));
-		printf("%d\n",estPresente(shared_char,tab[1]));
+		printf("<%d>\n",modifier(shared_char,"Je m'appelle jacky","uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"));
+		printf("%d : <%s>\n",i, shared_char);
 		
-		printf("%d\n",indice_debut(shared_char,tab[4]));
-		printf("%d\n",indice_debut(shared_char,"T'aimes le swag"));
-		printf("%d\n",indice_debut(shared_char,tab[1]));
-		
-		printf("%d\n",supp_chaine(shared_char,tab[3]));
-		printf("%d\n",supp_chaine(shared_char,"T'aimes le swag"));
-		printf("%d\n",supp_chaine(shared_char,tab[1]));
 		
 		printf("%d : <%s>\n",i, shared_char);
 		printf("%d : <%s>\n",i, shared_char+32);
 		printf("%d : <%s>\n",i, shared_char+64);
 		printf("%d : <%s>\n",i, shared_char+96);
 		printf("%d : <%s>\n",i, shared_char+128);
-		printf("%d : <%s>\n",i, shared_char+20);
-		
+		printf("%d : <%s>\n",i, shared_char+52);
+		printf("%d : <%s>\n",i, shared_char+256);
 		shmdt((char *)shared_char);
 	
 	}
