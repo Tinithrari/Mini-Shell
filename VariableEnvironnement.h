@@ -1,5 +1,5 @@
 //Determine si il y a des caracteres autre que '\0' sur un intervalle donné
-size_t strlen_interv(const char *s, int debut, int fin);
+int strlen_interv(const char *s, int debut, int fin);
 
 //Modifie la valeur associee a une variable
 int modifier(char * destination, char * nomVariable, char * valeurVariable);

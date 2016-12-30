@@ -13,11 +13,14 @@
 #define ERR -1 
 
 //Determine si il y a des caracteres autre que '\0' sur un intervalle donné
-size_t strlen_interv(const char *s, int debut, int fin)
+int strlen_interv(const char *s, int debut, int fin)
 {
-    size_t i;
-    for (i = debut; (i <= fin) && (s[i] != '\0'); i++);
-    return i == debut;
+    int i;
+    
+    for (i = debut; i <= fin; i++)
+         if (s[i] != '\0')
+                 return 0;	      
+    return 1;
 }
 
 //Modifie la valeur associee a une variable
