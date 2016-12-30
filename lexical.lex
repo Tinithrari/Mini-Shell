@@ -22,7 +22,7 @@
 	extern int first;
 	int flux = 0;
 %}
-NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;><(2>)(2>&1)(2>>)]
+NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;><]
 SPECIAL    [ \t\$\*\?\n\\\[\]\^\&\|;]
 VARIABLE    \$([a-zA-Z]|-|_)([0-9a-zA-Z]|-|_)*
 SIMPLEQUOTED     '(\\'|[^'])+'

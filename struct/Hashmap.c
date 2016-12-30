@@ -122,6 +122,9 @@ int updateEltHashmap(Hashmap* h, void* key, void* newValue)
     {
         p = (Pair*) getEltLL(h->map[noListe], i);
 
+	if (p == NULL)
+		break;
+	
         // Si la clé a été trouvée
         if (! h->cmp(key, p->key))
         {
@@ -180,6 +183,9 @@ void* getEltHashmap(Hashmap* h, void* key)
     {
         Pair *p = (Pair*) getEltLL(h->map[noListe], i);
 
+	if ( p == NULL )
+		return NULL;
+
         // Si on trouve la clé, retourne l'élément
         if (! h->cmp(key, p->key) )
             return p->elt;
@@ -208,13 +214,18 @@ void* removeEltHashmap(Hashmap* h, void* key)
     {
         Pair *p = (Pair*) getEltLL(h->map[noListe], i);
 
+	if (p == NULL)
+		return NULL;
+
         // Si on trouve la clé, supprime la paire et retourne l'élément
         if (! h->cmp(key, p->key) )
         {
-            void* elt = p->elt;
-            free(p->key);
-            free(p);
-            return elt;
+		void* elt;
+		p = removeEltLL(h->map[noListe], i);
+		elt = p->elt;
+		free(p->key);
+		free(p);
+		return elt;
         }
     }
 

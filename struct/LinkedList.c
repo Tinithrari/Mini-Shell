@@ -80,9 +80,9 @@ void* getEltLL(LinkedList *ll, unsigned int index)
         return NULL;
     }
 
-    for (i = 0, ptr = ll->head; i < index; ptr = ptr->next, i++);
+    for (i = 0, ptr = ll->head; i < index && ptr != NULL; ptr = ptr->next, i++);
 
-    return ptr->value;
+    return ptr == NULL ? NULL : ptr->value;
 }
 
 void* removeEltLL(LinkedList *ll, unsigned int index)

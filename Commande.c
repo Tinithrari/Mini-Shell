@@ -33,6 +33,18 @@ pid_t lastPid = 0;
 Job *running = NULL;
 ArrayList *jobs;
 
+static int isNumeric(char *str)
+{
+	char *ptr;
+	if (str == NULL)
+		return 0;
+
+	for (ptr = str; *ptr != '\0'; ptr++)
+		if (*ptr < '0' || *ptr > '9')
+			return 0;
+	return 1;
+}
+
 Commande* newCommande(string s)
 {
     Commande *c;
@@ -162,7 +174,11 @@ int executeCommande(Commande *c)
     else if (! strcmp(c->commande, "set"))
     {
 	    if (c->nOptions != 2)
+	    {
 		    lastReturn = 1;
+		    lastPid = getpid();
+		    return 0;
+	    }
 	    else
 	    {
 		    CoupleVariable co;
@@ -171,7 +187,25 @@ int executeCommande(Commande *c)
 			    return 0;
 		    
 		    setVariableLocale(&(co.name), &(co.value));
+		    lastReturn = 0;
+		    lastPid = getpid();
 
+		    return 1;
+	    }
+    }
+    else if (! strcmp(c->commande, "unset"))
+    {
+	    if (c->nOptions != 2)
+	    {
+		    lastReturn = 1;
+		    lastPid = getpid();
+		    return 0;
+	    }
+	    else
+	    {
+		    removeVariableLocale(&(c->options[1]));
+		    lastReturn = 1;
+		    lastPid = getpid();
 		    return 1;
 	    }
     }
@@ -182,31 +216,47 @@ int executeCommande(Commande *c)
     else if (! strcmp(c->commande, "myjobs"))
     {
 	    myjobs();
+	    lastReturn = 0;
+	    lastPid = getpid();
 	    return 1;
     }
     else if (! strcmp(c->commande, "status"))
     {
 	    status();
+	    lastReturn = 0;
+	    lastPid = getpid();
 	    return 1;
     }
     else if (! strcmp(c->commande, "myfg"))
     {
 	    if (c->nOptions == 1)
 		    myfg(-1);
-	    else if (c->nOptions == 2)
+	    else if (c->nOptions == 2 && isNumeric(c->options[1]))
 		    myfg(atoi(c->options[1]));
 	    else
+	    {
+		    lastReturn = 1;
+		    lastPid = getpid();
 		    return 0;
+	    }
+	    lastReturn = 0;
+	    lastPid = getpid();
 	    return 1;
     }
     else if (! strcmp(c->commande, "mybg"))
     {
 	    if (c->nOptions == 1)
 		    mybg(-1);
-	    else if (c->nOptions == 2)
+	    else if (c->nOptions == 2 && isNumeric(c->options[1]))
 		    mybg(atoi(c->options[1]));
 	    else
+	    {
+		    lastReturn = 1;
+		    lastPid = getpid();
 		    return 0;
+	    }
+	    lastReturn = 0;
+	    lastPid = getpid();
 	    return 1;
     }
 

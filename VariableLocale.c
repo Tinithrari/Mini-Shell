@@ -58,6 +58,22 @@ char* getValeurVariableLocale(char **name)
 	return res == NULL ? "" : *res;
 }
 
+void removeVariableLocale(char **name)
+{
+	string* str;
+
+	if (variablesLocales == NULL)
+		initHashmap();
+	
+	if ( name == NULL )
+		return;
+
+	str = removeEltHashmap(variablesLocales, name);
+
+	if (str != NULL)
+		free(*str);
+}
+
 void cleanVariable(void)
 {
     deleteHashmap(variablesLocales);
