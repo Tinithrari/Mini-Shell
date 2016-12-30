@@ -25,7 +25,7 @@ static char * destination;
 //Affiche l'ensemble des variables d'environnements
 void affiche_variables_environnement(void)
 {
-	int i, longueur;
+	int i, j, longueur;
 
 	if(destination == NULL)
 		return;
@@ -36,15 +36,22 @@ void affiche_variables_environnement(void)
 		{
 			char buffer[TAILLE];
 			
-			sprintf(buffer,"%s",destination[i]);
+			sprintf(buffer,"%s",destination + i);
 			longueur = strlen(buffer) + 1;
+			
+			for(j = 0; j < (longueur - 1); j++)
+				if(buffer[j] == '\a')
+				{
+					buffer[j] = '=';
+					break;
+				}
+			
 			
 			printf("%s\n",buffer);
 			
 			i += longueur;
 			continue;
 		}
-		
 		i++;
 	}
 }

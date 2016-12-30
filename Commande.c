@@ -269,6 +269,14 @@ int executeCommande(Commande *c)
     }
 	else if (! strcmp(c->commande, "setenv"))
     {
+    	if (c->nOptions == 1)
+	    {
+		    affiche_variables_environnement();
+		    lastReturn = 0;
+		    lastPid = getpid();
+		    return 1;
+	    }
+    
     	if (c->nOptions == 2)
 	    {
 		    CoupleVariable co;
