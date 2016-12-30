@@ -8,6 +8,8 @@
 	#include "Redirection.h"
 	#include "y.tab.h"
 
+	#define BASE_SIZE 2
+
 	#define and "&&"
 	#define or "||"
 	#define none ";"
@@ -21,11 +23,125 @@
 
 	extern int first;
 	int flux = 0;
+
+	char* traitementString(char *str)
+	{
+		int i, nbChar;
+		char protect = '\0', *newStr = NULL;
+
+		if (str == NULL)
+			return NULL;
+
+		for (i = 0, nbChar = 0; i < strlen(str); i++)
+		{
+			if (str[i] == '"' && protect == '\0')
+			{
+				if (i == 0 || str[i - 1] != '\\')
+					protect = '"';
+				else
+				{
+					char *tmp;
+					tmp = (char*) realloc(newStr, sizeof(char) * (BASE_SIZE + nbChar));
+
+					if (tmp == NULL)
+					{
+						free(newStr);
+						return NULL;
+					}
+					newStr = tmp;
+					newStr[nbChar] = str[i];
+					nbChar++;
+				}
+			}	
+			else if (str[i] == '"' && protect == '"')
+			{
+				if (i == 0 || str[i - 1] != '\\')
+					protect = '\0';
+				else
+				{
+					char *tmp;
+					tmp = (char*) realloc(newStr, sizeof(char) * (BASE_SIZE + nbChar));
+
+					if (tmp == NULL)
+					{
+						free(newStr);
+						return NULL;
+					}
+					newStr = tmp;
+					newStr[nbChar] = str[i];
+					nbChar++;
+				}
+
+			}
+			else if (str[i] == '\'' && protect == '\0')
+			{
+				if (i == 0 || str[i - 1] != '\\')
+					protect = '\'';
+				else
+				{
+					char *tmp;
+					tmp = (char*) realloc(newStr, sizeof(char) * (BASE_SIZE + nbChar));
+
+					if (tmp == NULL)
+					{
+						free(newStr);
+						return NULL;
+					}
+					newStr = tmp;
+					newStr[nbChar] = str[i];
+					nbChar++;
+				}
+
+			}
+			else if (str[i] == '\'' && protect == '\'')
+			{
+				if (i == 0 || str[i - 1] != '\\')
+					protect = '\0';
+				else
+				{
+					char *tmp;
+					tmp = (char*) realloc(newStr, sizeof(char) * (BASE_SIZE + nbChar));
+
+					if (tmp == NULL)
+					{
+						free(newStr);
+						return NULL;
+					}
+					newStr = tmp;
+					newStr[nbChar] = str[i];
+					nbChar++;
+				}
+
+			}
+			else if (str[i] == '\\' && (! i || str[i - 1] != '\\'))
+				continue;
+
+			else
+			{
+				char *tmp;
+				tmp = (char*) realloc(newStr, sizeof(char) * (BASE_SIZE + nbChar));
+
+				if (tmp == NULL)
+				{
+					free(newStr);
+					return NULL;
+				}
+				newStr = tmp;
+				newStr[nbChar] = str[i];
+				nbChar++;
+
+			}
+				
+		}
+
+		newStr[nbChar] = '\0';
+		return newStr;
+	}
 %}
 NORMAL    [^ \t\$\*\?\n\\\[\]\^\&\|;><]
-SPECIAL    [ \t\$\*\?\n\\\[\]\^\&\|;]
+SPECIAL    [ \t\$\*\?\n\\\[\]\^\&\|;\"']
 VARIABLE    \$([a-zA-Z]|-|_)([0-9a-zA-Z]|-|_)*
-SIMPLEQUOTED     '(\\'|[^'])+'
+SIMPLEQUOTED     '(\\'|[^'])*'
 DOUBLEQUOTED    \"(\\\"|[^\"])*\"
 STRING    ((\\{SPECIAL}|{NORMAL})|{SIMPLEQUOTED}|{DOUBLEQUOTED})+
 SEQUENCE    (\|\||\&\&|;)
@@ -41,14 +157,24 @@ BACKGROUND_MARK    \&
 {STRING}   {
 	if (first)
 	{
-		Commande *c = newCommande(yytext);
+		char *nStr = NULL;
+
+		for (;nStr == NULL;)
+			nStr = traitementString(yytext);
+
+		Commande *c = newCommande(nStr);
 		yylval.command = newSequence(c);
 		first = 0;
 		return commande;
 	}
 	else
 	{
-		yylval.string = yytext;
+		char *nStr = NULL;
+
+		for (;nStr == NULL;)
+			nStr = traitementString(yytext);
+
+		yylval.string = nStr;
 		if (flux)
 		{
 			flux = 0;
