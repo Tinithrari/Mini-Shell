@@ -93,7 +93,12 @@ Command:
 	}
 	| Command variable {
 		char* arg = $2 + 1;
-		addOptionCommande( $1->c, getValeurVariableLocale( &arg ) );
+		char *var = getValeurVariableLocale( &arg );
+
+		if (! strcmp(var, ""))
+			var = getValeur(arg);
+
+		addOptionCommande( $1->c, var);
 		$$ = $1;
 	}
 	| Command flow Command {

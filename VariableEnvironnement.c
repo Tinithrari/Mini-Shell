@@ -11,7 +11,10 @@
 #include "VariableEnvironnement.h"
 
 #define TAILLE 1024 
-#define ERR -1 
+#define ERR -1
+#define FILE "/bin/cat"
+#define KEY 4661
+
 #define SEP '\a'
 
 int shmcreer;
@@ -52,11 +55,17 @@ char * getValeur(char * chaine)
 
 void init_shm(void)
 {
-	shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600 | IPC_CREAT | IPC_EXCL); 
+	key_t k;
+
+	k = ftok(FILE, KEY);
+	shmid = shmget(k, sizeof(char) * TAILLE, 0600 | IPC_CREAT | IPC_EXCL); 
 	shmcreer = (shmid != ERR);
 	
 	if(shmid == ERR)
-		shmid = shmget(IPC_PRIVATE, sizeof(char) * TAILLE, 0600); 
+	{
+		printf("Coucou\n");
+		shmid = shmget(k, sizeof(char) * TAILLE, 0);
+	}
 	
 	destination = (char *)shmat(shmid,0,0);
 	

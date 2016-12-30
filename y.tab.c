@@ -78,6 +78,7 @@
 	#include "struct/LinkedList.h"
 	#include "struct/Hashmap.h"
 	#include "VariableLocale.h"
+	#include "VariableEnvironnement.h"
 
 	#define CWD_SIZE 1024
 	#define USERNAME_SIZE 1024
@@ -116,7 +117,7 @@
 		fflush(stdout);
 	}
 
-#line 120 "y.tab.c" /* yacc.c:339  */
+#line 121 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -172,14 +173,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 54 "synthax.y" /* yacc.c:355  */
+#line 55 "synthax.y" /* yacc.c:355  */
 
 	Sequence* command;
 	char* string;
 	Logique logic;
 	Flow flux;
 
-#line 183 "y.tab.c" /* yacc.c:355  */
+#line 184 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -196,7 +197,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 200 "y.tab.c" /* yacc.c:358  */
+#line 201 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -494,8 +495,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    70,    70,    71,    74,    80,    89,    93,    98,   103,
-     128,   132
+       0,    71,    71,    72,    75,    81,    90,    94,   104,   109,
+     134,   138
 };
 #endif
 
@@ -1270,30 +1271,30 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 70 "synthax.y" /* yacc.c:1646  */
+#line 71 "synthax.y" /* yacc.c:1646  */
     {}
-#line 1276 "y.tab.c" /* yacc.c:1646  */
+#line 1277 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 71 "synthax.y" /* yacc.c:1646  */
+#line 72 "synthax.y" /* yacc.c:1646  */
     {}
-#line 1282 "y.tab.c" /* yacc.c:1646  */
+#line 1283 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 74 "synthax.y" /* yacc.c:1646  */
+#line 75 "synthax.y" /* yacc.c:1646  */
     {
 		executeSequence((yyvsp[-1].command));
 		deleteSequence((yyvsp[-1].command));
 		first = 1;
 		prompt();
        }
-#line 1293 "y.tab.c" /* yacc.c:1646  */
+#line 1294 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 80 "synthax.y" /* yacc.c:1646  */
+#line 81 "synthax.y" /* yacc.c:1646  */
     {
 		setSequenceBackground((yyvsp[-2].command));
 		executeSequence((yyvsp[-2].command));
@@ -1301,40 +1302,45 @@ yyreduce:
 		first = 1;
 		prompt();
 	}
-#line 1305 "y.tab.c" /* yacc.c:1646  */
+#line 1306 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 89 "synthax.y" /* yacc.c:1646  */
+#line 90 "synthax.y" /* yacc.c:1646  */
     {
 		linkSequence((yyvsp[-2].command), (yyvsp[0].command), (yyvsp[-1].logic));
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1314 "y.tab.c" /* yacc.c:1646  */
+#line 1315 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 93 "synthax.y" /* yacc.c:1646  */
+#line 94 "synthax.y" /* yacc.c:1646  */
     {
 		char* arg = (yyvsp[0].string) + 1;
-		addOptionCommande( (yyvsp[-1].command)->c, getValeurVariableLocale( &arg ) );
+		char *var = getValeurVariableLocale( &arg );
+
+		if (! strcmp(var, ""))
+			var = getValeur(arg);
+
+		addOptionCommande( (yyvsp[-1].command)->c, var);
 		(yyval.command) = (yyvsp[-1].command);
 	}
-#line 1324 "y.tab.c" /* yacc.c:1646  */
+#line 1330 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 98 "synthax.y" /* yacc.c:1646  */
+#line 104 "synthax.y" /* yacc.c:1646  */
     {
 		pipeCommande((yyvsp[-2].command)->c, (yyvsp[0].command)->c);
 		linkSequence((yyvsp[-2].command), (yyvsp[0].command), NONE);
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1334 "y.tab.c" /* yacc.c:1646  */
+#line 1340 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 103 "synthax.y" /* yacc.c:1646  */
+#line 109 "synthax.y" /* yacc.c:1646  */
     {
 		switch ((yyvsp[-1].flux))
 		{
@@ -1360,28 +1366,28 @@ yyreduce:
 		}
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1364 "y.tab.c" /* yacc.c:1646  */
+#line 1370 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 128 "synthax.y" /* yacc.c:1646  */
+#line 134 "synthax.y" /* yacc.c:1646  */
     {
 		addOptionCommande((yyvsp[-1].command)->c, (yyvsp[0].string));
 		(yyval.command) = (yyvsp[-1].command);
 	}
-#line 1373 "y.tab.c" /* yacc.c:1646  */
+#line 1379 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 132 "synthax.y" /* yacc.c:1646  */
+#line 138 "synthax.y" /* yacc.c:1646  */
     {
 		(yyval.command) = (yyvsp[0].command);
 	}
-#line 1381 "y.tab.c" /* yacc.c:1646  */
+#line 1387 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1385 "y.tab.c" /* yacc.c:1646  */
+#line 1391 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1609,11 +1615,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 136 "synthax.y" /* yacc.c:1906  */
+#line 142 "synthax.y" /* yacc.c:1906  */
 
 
 int main (void) 
 {
+	init_shm();
 	signal(SIGINT, interruption);
 	signal(SIGTSTP, stopJob);
 	signal(SIGCHLD, childDead);

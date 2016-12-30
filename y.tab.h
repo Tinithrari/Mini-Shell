@@ -66,7 +66,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 54 "synthax.y" /* yacc.c:1909  */
+#line 55 "synthax.y" /* yacc.c:1909  */
 
 	Sequence* command;
 	char* string;
