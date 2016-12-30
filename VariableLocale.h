@@ -5,3 +5,5 @@ char *getValeurVariableLocale(char **name);
 void removeVariableLocale(char **name);
 
 void cleanVariable(void);
+
+void afficheEnsembleVariableLocale(void);

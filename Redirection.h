@@ -15,6 +15,7 @@ enum flow
 	ERROUT, /**< Flux mixé en sortie-erreur */
 	APPOUT, /**< Flux append en sortie */
 	APPERR, /**< Flux append en erreur */
+	APPERROUT, /**< Flux append en sortie-erreur*/
 	PIPE /**< Un tube */
 };
 

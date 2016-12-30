@@ -19,7 +19,8 @@
 	#define in "<"
 	#define err "2>"
 	#define apperr "2>>"
-	#define errout "2>&1"
+	#define errout ">&"
+	#define apperrout ">>&"
 
 	extern int first;
 	int flux = 0;
@@ -145,7 +146,7 @@ SIMPLEQUOTED     '(\\'|[^'])*'
 DOUBLEQUOTED    \"(\\\"|[^\"])*\"
 STRING    ((\\{SPECIAL}|{NORMAL})|{SIMPLEQUOTED}|{DOUBLEQUOTED})+
 SEQUENCE    (\|\||\&\&|;)
-FLUX    (\||>|>>|<|2>|2>>|2>\&1)
+FLUX    (\||>|>>|<|2>|2>>|>\&|>>\&)
 BACKGROUND_MARK    \&
 %%
 {VARIABLE} {
@@ -207,6 +208,8 @@ BACKGROUND_MARK    \&
 		yylval.flux = APPOUT;
 	else if (! strcmp(yytext, errout))
 		yylval.flux = APPERR;
+	else if (! strcmp(yytext, apperrout))
+		yylval.flux = APPERROUT;
 	else
 	{
 		yylval.flux = PIPE;

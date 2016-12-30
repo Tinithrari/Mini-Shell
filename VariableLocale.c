@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "VariableLocale.h"
 #include "struct/LinkedList.h"
@@ -77,4 +78,23 @@ void removeVariableLocale(char **name)
 void cleanVariable(void)
 {
     deleteHashmap(variablesLocales);
+}
+
+void afficheEnsembleVariableLocale(void)
+{
+	int i;
+
+	if (variablesLocales == NULL)
+		initHashmap();
+	
+	for (i = 0; i < variablesLocales->mapSize; i++)
+	{
+		int j;
+
+		for (j = 0; j < variablesLocales->map[i]->nElement; j++)
+		{
+			Pair *p = getEltLL(variablesLocales->map[i], j);
+			printf("<%s> => <%s>\n", *((char**)p->key), *((char**)p->elt));
+		}
+	}
 }

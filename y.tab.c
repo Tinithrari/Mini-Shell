@@ -496,7 +496,7 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    71,    71,    72,    75,    81,    90,    94,   104,   109,
-     134,   138
+     139,   143
 };
 #endif
 
@@ -1363,31 +1363,36 @@ yyreduce:
 			case APPERR:
 				setOutCommande((yyvsp[-2].command)->c, (yyvsp[0].string), 1);
 			break;
+			case APPERROUT:
+				setOutCommande((yyvsp[-2].command)->c, (yyvsp[0].string), 1);
+				setErrCommande((yyvsp[-2].command)->c, (yyvsp[0].string), 1);
+			break;
+
 		}
 		(yyval.command) = (yyvsp[-2].command);
 	}
-#line 1370 "y.tab.c" /* yacc.c:1646  */
+#line 1375 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 134 "synthax.y" /* yacc.c:1646  */
+#line 139 "synthax.y" /* yacc.c:1646  */
     {
 		addOptionCommande((yyvsp[-1].command)->c, (yyvsp[0].string));
 		(yyval.command) = (yyvsp[-1].command);
 	}
-#line 1379 "y.tab.c" /* yacc.c:1646  */
+#line 1384 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 138 "synthax.y" /* yacc.c:1646  */
+#line 143 "synthax.y" /* yacc.c:1646  */
     {
 		(yyval.command) = (yyvsp[0].command);
 	}
-#line 1387 "y.tab.c" /* yacc.c:1646  */
+#line 1392 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1391 "y.tab.c" /* yacc.c:1646  */
+#line 1396 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1615,7 +1620,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 142 "synthax.y" /* yacc.c:1906  */
+#line 147 "synthax.y" /* yacc.c:1906  */
 
 
 int main (void) 

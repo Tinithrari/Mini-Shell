@@ -128,6 +128,11 @@ Command:
 			case APPERR:
 				setOutCommande($1->c, $3, 1);
 			break;
+			case APPERROUT:
+				setOutCommande($1->c, $3, 1);
+				setErrCommande($1->c, $3, 1);
+			break;
+
 		}
 		$$ = $1;
 	}

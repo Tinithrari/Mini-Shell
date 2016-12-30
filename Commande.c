@@ -174,13 +174,14 @@ int executeCommande(Commande *c)
     }
     else if (! strcmp(c->commande, "set"))
     {
-	    if (c->nOptions != 2)
+	    if (c->nOptions == 1)
 	    {
-		    lastReturn = 1;
+		    afficheEnsembleVariableLocale();
+		    lastReturn = 0;
 		    lastPid = getpid();
-		    return 0;
+		    return 1;
 	    }
-	    else
+	    else if (c->nOptions == 2)
 	    {
 		    CoupleVariable co;
 
@@ -192,6 +193,12 @@ int executeCommande(Commande *c)
 		    lastPid = getpid();
 
 		    return 1;
+	    }
+	    else
+	    {
+		    lastReturn = 1;
+		    lastPid = getpid();
+		    return 0;
 	    }
     }
     else if (! strcmp(c->commande, "unset"))
