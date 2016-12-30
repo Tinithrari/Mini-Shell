@@ -27,9 +27,11 @@ static void cleanShell(void)
     int i;
 
     // Supprime les commandes
-    for (i = 0; i < jobs->nbElement; i++)
-	    deleteCommande(((Job*)jobs->array)[i].commande);
-
+    if (jobs != NULL)
+    {
+	    for (i = 0; i < jobs->nbElement; i++)
+		    deleteCommande(((Job*)jobs->array)[i].commande);
+    }
     // Supprime le tableau de Job
     deleteArray(jobs);
 	delete_shm();
@@ -57,8 +59,11 @@ void interruption(int sig)
     }
     
     // Tue les processus
-    for (i = 0; i < jobs->nbElement; i++)
-        kill(((Job*)jobs->array)[i].pid, SIGKILL);
+    if (jobs != NULL)
+    {
+	    for (i = 0; i < jobs->nbElement; i++)
+		    kill(((Job*)jobs->array)[i].pid, SIGKILL);
+    }
     cleanShell();
     exit(0);
 }

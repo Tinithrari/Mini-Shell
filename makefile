@@ -25,7 +25,7 @@ make myls:
 	gcc -o myls myls.o Queue.o
 
 job:
-	gcc -c Job.c JobCommand.c struct/ArrayList.c
+	gcc -g -c Job.c JobCommand.c struct/ArrayList.c
 
 commande:
 	gcc -c CoupleVariable.c
